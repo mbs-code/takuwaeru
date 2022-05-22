@@ -8,6 +8,40 @@ use crate::{
 };
 
 #[tauri::command]
+pub fn list(
+    page: i64,
+    per_page: Option<i64>,
+    order: Option<String>,
+    desc: Option<bool>,
+) -> Result<Vec<Site>, Box<dyn Error>> {
+    let conn = get_conn()?.lock()?;
+
+    let v_order = order.unwrap_or("id".to_string());
+    let v_desc = desc.unwrap_or(false);
+    let v_limit = per_page.unwrap_or(10);
+    let v_offset = (page - 1) * v_limit;
+
+    let sql = SqlBuilder::select_from("sites")
+        .field("*")
+        .order_by(quote(v_order), v_desc)
+        .limit(v_limit)
+        .offset(v_offset)
+        .sql()?;
+
+    #[cfg(debug_assertions)]
+    println!("{:?}", &sql);
+
+    let mut stmt = conn.prepare(&sql)?;
+    let sites = stmt
+        .query_map([], |row| Site::by_row(row))
+        .unwrap()
+        .map(|r| r.unwrap())
+        .collect::<Vec<Site>>();
+
+    Ok(sites)
+}
+
+#[tauri::command]
 pub fn get(page_id: &i64) -> Result<Site, Box<dyn Error>> {
     let conn = get_conn()?.lock()?;
 

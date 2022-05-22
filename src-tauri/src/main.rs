@@ -6,7 +6,8 @@
 use app::command;
 
 fn main() {
-    let site = command::site::update(&1, &"url".to_string(), &Some("title".to_string())).unwrap();
+    // let site = command::site::create(&"url2".to_string(), &Some("title2".to_string())).unwrap();
+    let site = command::site::list(1, None, None, None).unwrap();
     println!("{:?}", site);
 
     // tauri::Builder::default()
