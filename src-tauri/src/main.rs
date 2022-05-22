@@ -3,10 +3,11 @@
     windows_subsystem = "windows"
 )]
 
-use app::db;
+use app::command;
 
 fn main() {
-    let conn = db::get_conn().unwrap();
+    let site = command::site::create("url".to_string(), Some("title".to_string())).unwrap();
+    println!("{:?}", site);
 
     // tauri::Builder::default()
     //     .run(tauri::generate_context!())
