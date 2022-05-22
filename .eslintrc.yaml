@@ -1,0 +1,40 @@
+---
+env:
+  browser: true
+  es2021: true
+  node: true
+extends:
+- eslint:recommended
+- plugin:vue/essential
+- plugin:@typescript-eslint/recommended
+- "@nuxtjs/eslint-config-typescript"
+parserOptions:
+  ecmaVersion: latest
+  parser: "@typescript-eslint/parser"
+  sourceType: module
+plugins:
+- vue
+- "@typescript-eslint"
+rules:
+  # 複数ルートの許可
+  vue/no-multiple-template-root: 'off'
+  # html 属性の改行
+  vue/max-attributes-per-line:
+    - error
+    - singleline:
+        max: 3
+      multiline:
+        max: 1
+  indent:
+    - error
+    - 2
+    - SwitchCase: 1
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never
