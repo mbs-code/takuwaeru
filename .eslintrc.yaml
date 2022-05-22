@@ -25,6 +25,10 @@ rules:
         max: 3
       multiline:
         max: 1
+  # 配列にカンマ強制
+  comma-dangle:
+    - error
+    - only-multiline
   indent:
     - error
     - 2
