@@ -4,13 +4,16 @@
 )]
 
 use app::command;
+use tauri::generate_handler;
 
 fn main() {
-    // let site = command::site::create(&"url2".to_string(), &Some("title2".to_string())).unwrap();
-    let site = command::site::list(1, None, None, None).unwrap();
-    println!("{:?}", site);
-
-    // tauri::Builder::default()
-    //     .run(tauri::generate_context!())
-    //     .expect("error while running tauri application");
+    tauri::Builder::default()
+        .invoke_handler(generate_handler![
+            command::site::list,
+            command::site::create,
+            command::site::update,
+            command::site::delete,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
