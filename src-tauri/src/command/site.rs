@@ -20,11 +20,11 @@ pub fn list(
 }
 
 #[tauri::command]
-pub fn create(url: String, title: Option<String>) -> Result<Site, String> {
+pub fn create(key: String, url: String, title: Option<String>) -> Result<Site, String> {
     let do_steps = || -> Result<Site, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let site_id = api::site::create(&conn, url, title)?;
+        let site_id = api::site::create(&conn, key, url, title)?;
         let new_site = api::site::get(&conn, site_id)?;
         Ok(new_site)
     }();
@@ -33,11 +33,16 @@ pub fn create(url: String, title: Option<String>) -> Result<Site, String> {
 }
 
 #[tauri::command]
-pub fn update(site_id: i64, url: String, title: Option<String>) -> Result<Site, String> {
+pub fn update(
+    site_id: i64,
+    key: String,
+    url: String,
+    title: Option<String>,
+) -> Result<Site, String> {
     let do_steps = || -> Result<Site, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let _ = api::site::update(&conn, site_id, url, title)?;
+        let _ = api::site::update(&conn, site_id, key, url, title)?;
         let new_site = api::site::get(&conn, site_id)?;
         Ok(new_site)
     }();

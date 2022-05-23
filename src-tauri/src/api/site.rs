@@ -52,17 +52,20 @@ pub fn get(conn: &Connection, site_id: i64) -> Result<Site, Box<dyn Error>> {
 
 pub fn create(
     conn: &Connection,
+    key: String,
     url: String,
     title: Option<String>,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::insert_into("sites")
+        .field("key")
         .field("url")
         .field("title")
         .field("created_at")
         .field("updated_at")
         .values(&["?", "?", &quote(&now), &quote(&now)])
         .sql()?
+        .bind(&key)
         .bind(&url)
         .bind(&title);
 
@@ -81,16 +84,19 @@ pub fn create(
 pub fn update(
     conn: &Connection,
     site_id: i64,
+    key: String,
     url: String,
     title: Option<String>,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("sites")
+        .set("key", "?")
         .set("url", "?")
         .set("title", "?")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(&site_id))
         .sql()?
+        .bind(&key)
         .bind(&url)
         .bind(&title);
 
