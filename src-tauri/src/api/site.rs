@@ -7,22 +7,24 @@ use crate::{db::chrono_now, model::Site};
 
 pub fn list(
     conn: &Connection,
-    page: i64,
-    per_page: Option<i64>,
+    limit: Option<i64>,
+    offset: Option<i64>,
     order: Option<String>,
     desc: Option<bool>,
 ) -> Result<Vec<Site>, Box<dyn Error>> {
-    let v_order = order.unwrap_or("id".to_string());
-    let v_desc = desc.unwrap_or(false);
-    let v_limit = per_page.unwrap_or(10);
-    let v_offset = (page - 1) * v_limit;
+    let mut builder = SqlBuilder::select_from("sites");
 
-    let sql = SqlBuilder::select_from("sites")
-        .field("*")
-        .order_by(quote(v_order), v_desc)
-        .limit(v_limit)
-        .offset(v_offset)
-        .sql()?;
+    if let Some(v_order) = order {
+        let v_desc = desc.unwrap_or(false);
+        builder.order_by(quote(v_order), v_desc);
+    }
+    if let Some(v_limit) = limit {
+        builder.limit(v_limit);
+    }
+    if let Some(v_offset) = offset {
+        builder.offset(v_offset);
+    }
+    let sql = builder.field("*").sql()?;
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
@@ -63,7 +65,7 @@ pub fn create(
         .field("title")
         .field("created_at")
         .field("updated_at")
-        .values(&["?", "?", &quote(&now), &quote(&now)])
+        .values(&["?", "?", "?", &quote(&now), &quote(&now)])
         .sql()?
         .bind(&key)
         .bind(&url)

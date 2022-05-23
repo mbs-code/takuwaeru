@@ -12,7 +12,9 @@ pub fn list(
     let do_steps = || -> Result<Vec<Site>, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let sites = api::site::list(&conn, page, per_page, order, desc)?;
+        let v_limit = per_page.unwrap_or(10);
+        let v_offset = (page - 1) * v_limit;
+        let sites = api::site::list(&conn, Some(v_limit), Some(v_offset), order, desc)?;
         Ok(sites)
     }();
 
