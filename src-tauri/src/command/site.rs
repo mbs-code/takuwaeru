@@ -3,7 +3,7 @@ use std::error::Error;
 use crate::{
     api::{self, site::sync_site_queries},
     db::get_conn,
-    model::{Site, SiteParam, SiteWithQuery},
+    model::{SiteParam, SiteWithQuery},
 };
 
 #[tauri::command]
