@@ -7,6 +7,18 @@ CREATE TABLE sites (
   "updated_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE site_queries (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "site_id" INTEGER NOT NULL,
+  "key" TEXT NOT NULL,
+  "url_pattern" TEXT NOT NULL,
+  "processor" TEXT NOT NULL,
+  "url_filter" TEXT NOT NULL,
+  "priority" INTEGER NOT NULL,
+  "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- parentは親ページ要素
 CREATE TABLE pages (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
