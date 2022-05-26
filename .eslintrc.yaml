@@ -16,6 +16,8 @@ plugins:
 - vue
 - "@typescript-eslint"
 rules:
+  # single word component の許可
+  vue/multi-word-component-names: 'off'
   # 複数ルートの許可
   vue/no-multiple-template-root: 'off'
   # html 属性の改行
