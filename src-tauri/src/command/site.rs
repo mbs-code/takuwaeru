@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub fn list(
+pub fn site_list(
     page: i64,
     per_page: Option<i64>,
     order: Option<String>,
@@ -36,7 +36,21 @@ pub fn list(
 }
 
 #[tauri::command]
-pub fn create(param: SiteParam) -> Result<SiteWithQuery, String> {
+pub fn site_get(site_id: i64) -> Result<SiteWithQuery, String> {
+    let do_steps = || -> Result<SiteWithQuery, Box<dyn Error>> {
+        let conn = get_conn()?.lock()?;
+
+        let site = api::site::get(&conn, &site_id)?;
+        let queries =
+            api::site_query::list(&conn, &Some(site_id), &None, &None, &None, &None, &None)?;
+        Ok(SiteWithQuery::new(site, queries))
+    }();
+
+    return do_steps.map_err(|s| s.to_string());
+}
+
+#[tauri::command]
+pub fn site_create(param: SiteParam) -> Result<SiteWithQuery, String> {
     let do_steps = || -> Result<SiteWithQuery, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
@@ -53,7 +67,7 @@ pub fn create(param: SiteParam) -> Result<SiteWithQuery, String> {
 }
 
 #[tauri::command]
-pub fn update(site_id: i64, param: SiteParam) -> Result<SiteWithQuery, String> {
+pub fn site_update(site_id: i64, param: SiteParam) -> Result<SiteWithQuery, String> {
     let do_steps = || -> Result<SiteWithQuery, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
@@ -70,7 +84,7 @@ pub fn update(site_id: i64, param: SiteParam) -> Result<SiteWithQuery, String> {
 }
 
 #[tauri::command]
-pub fn delete(site_id: i64) -> Result<i64, String> {
+pub fn site_delete(site_id: i64) -> Result<i64, String> {
     let do_steps = || -> Result<i64, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 

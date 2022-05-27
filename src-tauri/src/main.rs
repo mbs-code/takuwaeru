@@ -9,10 +9,11 @@ use tauri::generate_handler;
 fn main() {
     tauri::Builder::default()
         .invoke_handler(generate_handler![
-            command::site::list,
-            command::site::create,
-            command::site::update,
-            command::site::delete,
+            command::site::site_list,
+            command::site::site_get,
+            command::site::site_create,
+            command::site::site_update,
+            command::site::site_delete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
