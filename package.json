@@ -9,8 +9,9 @@
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",
-    "@tauri-apps/api": "^1.0.0-rc.5",
-    "daisyui": "^2.15.0"
+    "@inkline/inkline": "^3.0.8",
+    "@inkline/nuxt": "^3.1.0",
+    "@tauri-apps/api": "^1.0.0-rc.5"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",
@@ -20,6 +21,7 @@
     "eslint": "^8.16.0",
     "eslint-plugin-vue": "^9.0.1",
     "nuxt": "3.0.0-rc.3",
+    "sass": "^1.52.1",
     "tailwindcss": "^3.0.24",
     "typescript": "^4.6.4",
     "vite-plugin-eslint": "^1.6.1"

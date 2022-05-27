@@ -7,7 +7,13 @@ export default defineNuxtConfig({
   ssr: false,
   target: 'static',
 
-  css: ['@/assets/styles/tailwind.css'],
+  modules: [
+    '@inkline/nuxt',
+  ],
+
+  inkline: {
+    // Plugin options (optional)
+  },
 
   vite: {
     plugins: [eslintPlugin()]
