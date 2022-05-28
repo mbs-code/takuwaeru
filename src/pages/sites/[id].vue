@@ -1,8 +1,8 @@
 <template>
   <div v-if="site" class="m-2">
-    <nuxt-link class="btn" :to="{ name: 'index' }">
-      home
-    </nuxt-link>
+    <i-button tag="nuxt-link" :to="{ name: 'index' }">
+      Home
+    </i-button>
 
     <button class="btn">
       edit
