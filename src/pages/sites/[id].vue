@@ -1,14 +1,16 @@
 <template>
-  <div v-if="site" class="m-2">
-    <nuxt-link class="btn" :to="{ name: 'index' }">
-      home
-    </nuxt-link>
+  <div>
+    <div>
+      <nuxt-link class="no-underline-all" :to="{ name: 'index' }">
+        <Button class="m-1" label="Home" />
+      </nuxt-link>
 
-    <button class="btn">
-      edit
-    </button>
+      <Button class="m-1" label="Edit" @click="showEditModal = true" />
+    </div>
 
-    <p>{{ $route.params.id }}</p>
+    {{ site }}
+
+    <!-- <p>{{ $route.params.id }}</p>
     <p>{{ site }}</p>
 
     <div class="card card-bordered card-compact border-sky-500 border-1">
@@ -25,7 +27,13 @@
 
     <div v-for="(query, _) in site.site_queries" :key="_">
       {{ query }}
-    </div>
+    </div> -->
+
+    <SiteEditModal
+      v-model:show="showEditModal"
+      :site="site"
+      @saved="onSaved"
+    />
   </div>
 </template>
 
@@ -41,4 +49,9 @@ onMounted(async () => {
   const siteId = parseInt(route.params.id?.['0'])
   site.value = await siteAPI.get(siteId)
 })
+
+const showEditModal = ref<boolean>(false)
+const onSaved = (newSite: Site) => {
+  site.value = newSite
+}
 </script>

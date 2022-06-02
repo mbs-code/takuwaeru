@@ -1,11 +1,13 @@
 import { invoke } from '@tauri-apps/api/tauri'
 
+export type ProcessorType = 'extract' | 'image'
+
 export type SiteQuery = {
   id: number
   site_id: number
   key: string
   url_pattern: string
-  processor: string
+  processor: ProcessorType,
   url_filter: string
   priority: number
   created_at: string
@@ -20,6 +22,23 @@ export type Site = {
   created_at: string
   updated_at: string
   site_queries: SiteQuery[]
+}
+
+///
+
+export type SiteQueryParam = {
+  key: string,
+  url_pattern: string,
+  processor: ProcessorType,
+  url_filter: string,
+  priority: number,
+}
+
+export type SiteParam = {
+  key: string,
+  url: string,
+  title?: string,
+  site_queries: SiteQueryParam[]
 }
 
 // export type FormReport = {
@@ -52,13 +71,19 @@ export const useSiteAPI = () => {
     return site
   }
 
-  // const create = async (form: FormReport) => {
-  //   const report: Report = await invoke('report_create', {
-  //     params: form,
-  //   })
-  //   return report
-  // }
+  const create = async (param: SiteParam) => {
+    const site: Site = await invoke('site_create', {
+      param,
+    })
+    return site
+  }
 
+  const update = async (siteId: number, param: SiteParam) => {
+    const site: Site = await invoke('site_update', {
+      siteId, param,
+    })
+    return site
+  }
   // const update = async (reportId: number, form: FormReport) => {
   //   const report: Report = await invoke('report_update', {
   //     reportId: reportId,
@@ -77,8 +102,8 @@ export const useSiteAPI = () => {
   return {
     list,
     get,
-    // create,
-    // update,
+    create,
+    update,
     // remove,
   }
 }

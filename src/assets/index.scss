@@ -1,0 +1,28 @@
+@import 'primeflex/primeflex.scss';
+
+.no-underline-all {
+  @include styleclass('no-underline hover:no-underline focus:no-underline active:no-underline');
+}
+
+.org-dialog {
+  .p-dialog-header {
+    @include styleclass('p-2');
+    height: 54px;
+    border-bottom: solid 1px var(--surface-400) !important
+  }
+
+  .p-dialog-content {
+    @include styleclass('px-3 py-0');
+  }
+
+  .p-dialog-footer {
+    @include styleclass('p-2');
+    height: 54px;
+    border-top: solid 1px var(--surface-400) !important
+  }
+}
+
+.edit-color {
+  color: #ffffff !important;
+  background-color: #5e8f32 !important;
+}
