@@ -16,13 +16,14 @@ plugins:
 - vue
 - "@typescript-eslint"
 rules:
+  # 未使用変数
+  '@typescript-eslint/no-unused-vars': 'warn'
   # single word component の許可
   vue/multi-word-component-names: 'off'
   # 複数ルートの許可
   vue/no-multiple-template-root: 'off'
   # 複数v-modelの許可
   vue/no-v-model-argument: 'off'
-  '@typescript-eslint/no-unused-vars': 'warn'
   # html 属性の改行
   vue/max-attributes-per-line:
     - error
@@ -30,6 +31,25 @@ rules:
         max: 3
       multiline:
         max: 1
+  # html attribute ソート
+  vue/attributes-order:
+    - error
+    - order:
+      - DEFINITION
+      - LIST_RENDERING
+      - CONDITIONALS
+      - RENDER_MODIFIERS
+      - GLOBAL
+      - - UNIQUE
+        - SLOT
+      - TWO_WAY_BINDING
+      - OTHER_DIRECTIVES
+      - OTHER_ATTR
+      - EVENTS
+      - CONTENT
+      alphabetical: true
+  # html class 内ソート
+  vue/static-class-names-order: 'warn'
   # 配列にカンマ強制
   comma-dangle:
     - error
