@@ -2,13 +2,13 @@
   <Dialog
     v-model:visible="_show"
     class="org-dialog"
-    modal
     :draggable="false"
+    modal
     :style="{ width: '480px' }"
   >
     <template #header>
       <div>
-        <Avatar class="mx-2 edit-color" icon="pi pi-database" />
+        <Avatar class="edit-color mx-2" icon="pi pi-database" />
         <span class="mx-2 p-dialog-title">サイト情報編集</span>
       </div>
     </template>
@@ -31,19 +31,19 @@
     <template #footer>
       <div class="flex">
         <Button
-          label="リセット"
-          class="mx-2 p-button-sm p-button-outlined p-button-secondary"
+          class="mx-2 p-button-outlined p-button-secondary p-button-sm"
           :disabled="loading"
+          label="リセット"
           @click="onReset"
         />
 
         <div class="flex-grow-1" />
 
         <Button
-          label="保存"
           class="mx-2 p-button-sm p-button-success"
-          :icon="loading ? 'pi pi-spin pi-spinner' :'pi pi-save'"
           :disabled="loading"
+          :icon="loading ? 'pi pi-spin pi-spinner' :'pi pi-save'"
+          label="保存"
           @click="onSubmit"
         />
       </div>

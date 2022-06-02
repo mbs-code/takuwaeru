@@ -2,10 +2,10 @@
   <div>
     <div>
       <nuxt-link class="no-underline-all" :to="{ name: 'index' }">
-        <Button label="Home" class="m-1" />
+        <Button class="m-1" label="Home" />
       </nuxt-link>
 
-      <Button label="Edit" class="m-1" @click="showEditModal = true" />
+      <Button class="m-1" label="Edit" @click="showEditModal = true" />
     </div>
 
     {{ site }}
