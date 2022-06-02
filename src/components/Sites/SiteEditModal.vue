@@ -53,7 +53,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useToast } from 'primevue/usetoast'
 import { Site, SiteParam, useSiteAPI } from '@/apis/useSiteAPI'
+
+const siteAPI = useSiteAPI()
+const toast = useToast()
 
 const props = defineProps<{
   show: boolean,
@@ -65,7 +69,6 @@ const emit = defineEmits<{
   (event: 'update:show', show: boolean): void,
   (event: 'saved', site: Site): void,
 }>()
-const siteAPI = useSiteAPI()
 
 const _show = computed({
   get: () => props.show,
@@ -109,10 +112,11 @@ const onSubmit = async () => {
       ? await siteAPI.update(props.site?.id, form)
       : await siteAPI.create(form)
 
+    toast.add({ severity: 'success', summary: 'サイト情報を保存しました', detail: `[${newSite.key}] ${newSite.title}`, life: 3000 })
     emit('saved', newSite)
     onClose()
   } catch (err) {
-    console.log(err)
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
     loading.value = false
   }
