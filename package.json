@@ -1,9 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt generate",
-    "preview": "nuxt preview",
+    "dev": "nuxi dev",
+    "build": "nuxi generate",
+    "preview": "nuxi preview",
+    "analyze": "nuxi analyze -o",
     "tauri": "tauri",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ."
   },
