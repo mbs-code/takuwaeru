@@ -7,25 +7,24 @@ export default defineNuxtConfig({
   ssr: false,
   target: 'static',
 
-  modules: [
-    '@inkline/nuxt',
+  css: [
+    '@/assets/index.scss',
   ],
 
-  inkline: {
-    // Plugin options (optional)
+  components: [
+    {
+      path: '@/components/',
+      pathPrefix: false,
+    },
+  ],
+
+  build: {
+    transpile: ['primevue']
   },
 
   vite: {
-    plugins: [eslintPlugin()]
-  },
-
-  build: {
-    postcss: {
-      postcssOptions: {
-        plugins: {
-          tailwindcss: {},
-        },
-      },
-    },
+    plugins: [eslintPlugin({
+      fix: true,
+    })]
   },
 })

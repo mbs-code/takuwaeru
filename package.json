@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",
-    "@inkline/inkline": "^3.0.8",
-    "@inkline/nuxt": "^3.1.0",
-    "@tauri-apps/api": "^1.0.0-rc.5"
+    "@tauri-apps/api": "^1.0.0-rc.5",
+    "primeflex": "^3.2.1",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.12.6"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",
@@ -22,7 +23,6 @@
     "eslint-plugin-vue": "^9.0.1",
     "nuxt": "3.0.0-rc.3",
     "sass": "^1.52.1",
-    "tailwindcss": "^3.0.24",
     "typescript": "^4.6.4",
     "vite-plugin-eslint": "^1.6.1"
   }
