@@ -20,6 +20,9 @@ rules:
   vue/multi-word-component-names: 'off'
   # 複数ルートの許可
   vue/no-multiple-template-root: 'off'
+  # 複数v-modelの許可
+  vue/no-v-model-argument: 'off'
+  '@typescript-eslint/no-unused-vars': 'warn'
   # html 属性の改行
   vue/max-attributes-per-line:
     - error
