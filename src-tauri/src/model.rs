@@ -96,3 +96,39 @@ pub struct SiteQueryParam {
     pub url_filter: String,
     pub priority: i64,
 }
+
+/// ////////////////////////////////////////////////////////////
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Page {
+    pub id: i64,
+    pub site_id: i64,
+    pub parent_id: Option<i64>,
+    pub url: String,
+    pub title: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+impl Page {
+    pub fn by_row(row: &Row) -> Result<Page, Error> {
+        Ok(Page {
+            id: row.get(0)?,
+            site_id: row.get(1)?,
+            parent_id: row.get(2)?,
+            url: row.get(3)?,
+            title: row.get(4)?,
+            created_at: row.get(5)?,
+            updated_at: row.get(6)?,
+        })
+    }
+}
+
+///
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PageParam {
+    pub site_id: i64,
+    pub parent_id: Option<i64>,
+    pub url: String,
+    pub title: Option<String>,
+}

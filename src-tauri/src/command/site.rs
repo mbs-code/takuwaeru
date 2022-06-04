@@ -100,6 +100,7 @@ pub fn site_delete(site_id: i64) -> Result<i64, String> {
     let do_steps = || -> Result<i64, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
+        let _ = api::page::delete(&conn, &None, &Some(site_id));
         let _ = api::site_query::delete(&conn, &None, &Some(site_id));
         let _ = api::site::delete(&conn, &site_id)?;
 

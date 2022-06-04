@@ -15,6 +15,13 @@ fn main() {
             command::site::site_create,
             command::site::site_update,
             command::site::site_delete,
+            command::page::page_count,
+            command::page::page_list,
+            command::page::page_get,
+            command::page::page_create,
+            command::page::page_update,
+            command::page::page_delete,
+            command::page::page_clear,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
