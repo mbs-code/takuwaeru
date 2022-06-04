@@ -109,8 +109,8 @@ pub fn update(
     let now = chrono_now();
     let sql = SqlBuilder::update_table("sites")
         .set("key", ":key:")
-        .set("url", ":url")
-        .set("title", ":title")
+        .set("url", ":url:")
+        .set("title", ":title:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_id))
         .sql()?
