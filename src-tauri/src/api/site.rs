@@ -9,6 +9,18 @@ use crate::{
     model::{Site, SiteQueryParam},
 };
 
+pub fn list_count(conn: &Connection) -> Result<i64, Box<dyn Error>> {
+    let mut builder = SqlBuilder::select_from("sites");
+    let sql = builder.count("*").sql()?;
+
+    #[cfg(debug_assertions)]
+    println!("{:?}", &sql);
+
+    let count = conn.query_row::<i64, _, _>(&sql, [], |row| row.get(0))?;
+
+    Ok(count)
+}
+
 pub fn list(
     conn: &Connection,
     limit: &Option<i64>,

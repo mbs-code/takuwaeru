@@ -7,6 +7,18 @@ use crate::{
 };
 
 #[tauri::command]
+pub fn site_count() -> Result<i64, String> {
+    let do_steps = || -> Result<i64, Box<dyn Error>> {
+        let conn = get_conn()?.lock()?;
+
+        let count = api::site::list_count(&conn)?;
+        Ok(count)
+    }();
+
+    return do_steps.map_err(|s| s.to_string());
+}
+
+#[tauri::command]
 pub fn site_list(
     page: i64,
     per_page: Option<i64>,

@@ -9,6 +9,7 @@ use tauri::generate_handler;
 fn main() {
     tauri::Builder::default()
         .invoke_handler(generate_handler![
+            command::site::site_count,
             command::site::site_list,
             command::site::site_get,
             command::site::site_create,
