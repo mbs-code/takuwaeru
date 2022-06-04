@@ -26,7 +26,7 @@ export type Site = {
 
 ///
 
-export type SiteQueryParam = {
+export type FormSiteQuery = {
   key: string,
   url_pattern: string,
   processor: ProcessorType,
@@ -34,33 +34,30 @@ export type SiteQueryParam = {
   priority: number,
 }
 
-export type SiteParam = {
+export type FormSite = {
   key: string,
   url: string,
   title?: string,
-  site_queries: SiteQueryParam[]
+  site_queries: FormSiteQuery[]
 }
 
-// export type FormReport = {
-//   title?: string
-//   body: string
-//   tag_names: string[]
-// }
+export type SearchSite = {
+  page: number,
+  perPage: number,
+  order?: string,
+  desc?: boolean,
+}
 
-// export type SearchReport = {
-//   text?: string
-//   page: number
-//   count: number
-//   latest: boolean
-//   useUpdatedAt: boolean
-//   timezoneOffsetSec: number
-// }
+///
 
 export const useSiteAPI = () => {
-  const list = async () => {
-    const sites: Site[] = await invoke('site_list', {
-      page: 1,
-    })
+  const count = async () => {
+    const num: number = await invoke('site_count')
+    return num
+  }
+
+  const list = async (search: SearchSite) => {
+    const sites: Site[] = await invoke('site_list', search)
     return sites
   }
 
@@ -71,39 +68,33 @@ export const useSiteAPI = () => {
     return site
   }
 
-  const create = async (param: SiteParam) => {
+  const create = async (param: FormSite) => {
     const site: Site = await invoke('site_create', {
       param,
     })
     return site
   }
 
-  const update = async (siteId: number, param: SiteParam) => {
+  const update = async (siteId: number, param: FormSite) => {
     const site: Site = await invoke('site_update', {
       siteId, param,
     })
     return site
   }
-  // const update = async (reportId: number, form: FormReport) => {
-  //   const report: Report = await invoke('report_update', {
-  //     reportId: reportId,
-  //     params: form,
-  //   })
-  //   return report
-  // }
 
-  // const remove = async (reportId: number) => {
-  //   const result: boolean = await invoke('report_remove', {
-  //     reportId: reportId,
-  //   })
-  //   return result
-  // }
+  const remove = async (siteId: number) => {
+    const result: boolean = await invoke('site_delete', {
+      siteId,
+    })
+    return result
+  }
 
   return {
+    count,
     list,
     get,
     create,
     update,
-    // remove,
+    remove,
   }
 }

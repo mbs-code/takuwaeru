@@ -1,5 +1,15 @@
 @import 'primeflex/primeflex.scss';
 
+body {
+  @include styleclass('m-0 overflow-y-hidden');
+}
+
+.p-datatable-wrapper {
+  @include styleclass('overflow-y-scroll h-full');
+}
+
+///
+
 .no-underline-all {
   @include styleclass('no-underline hover:no-underline focus:no-underline active:no-underline');
 }
@@ -7,7 +17,7 @@
 .org-dialog {
   .p-dialog-header {
     @include styleclass('p-2');
-    height: 54px;
+    height: 59px;
     border-bottom: solid 1px var(--surface-400) !important
   }
 
@@ -17,12 +27,21 @@
 
   .p-dialog-footer {
     @include styleclass('p-2');
-    height: 54px;
+    height: 59px;
     border-top: solid 1px var(--surface-400) !important
   }
 }
 
-.edit-color {
+.p-button.p-button-icon-only {
+  width: 2.357rem !important;
+}
+
+.info-color {
+  color: #ffffff !important;
+  background-color: #027abc !important;
+}
+
+.success-color {
   color: #ffffff !important;
   background-color: #5e8f32 !important;
 }

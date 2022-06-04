@@ -13,7 +13,8 @@
     "@tauri-apps/api": "^1.0.0-rc.5",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
-    "primevue": "^3.12.6"
+    "primevue": "^3.12.6",
+    "vue-window-size": "^1.1.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",

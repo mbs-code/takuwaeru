@@ -5,17 +5,29 @@
     :draggable="false"
     modal
     :style="{ width: '480px' }"
+    @keydown.enter.ctrl="onSubmit"
   >
     <template #header>
       <div>
-        <Avatar class="edit-color mx-2" icon="pi pi-database" />
-        <span class="mx-2 p-dialog-title">サイト情報編集</span>
+        <Avatar
+          class="mx-1"
+          :class="{ 'info-color': !isEdit, 'success-color': isEdit }"
+          icon="pi pi-database"
+        />
+        <span class="mx-1 p-dialog-title">
+          {{ isEdit ? 'サイト設定の編集' : '新規サイト設定' }}
+        </span>
       </div>
     </template>
 
     <div class="my-4">
       <label class="block">識別記号* (英数字)</label>
-      <InputText v-model="form.key" class="block w-full" :disabled="loading" />
+      <InputText
+        v-model="form.key"
+        autofocus
+        class="block w-full"
+        :disabled="loading"
+      />
     </div>
 
     <div class="my-4">
@@ -31,19 +43,29 @@
     <template #footer>
       <div class="flex">
         <Button
-          class="mx-2 p-button-outlined p-button-secondary p-button-sm"
+          class="p-button-danger"
+          :disabled="loading"
+          icon="pi pi-minus"
+          type="button"
+          @click="openDeleteDialog"
+        />
+
+        <Button
+          class="p-button-outlined p-button-secondary"
           :disabled="loading"
           label="リセット"
+          type="button"
           @click="onReset"
         />
 
         <div class="flex-grow-1" />
 
         <Button
-          class="mx-2 p-button-sm p-button-success"
+          :class="{ 'p-button-info': !isEdit, 'p-button-success': isEdit }"
           :disabled="loading"
           :icon="loading ? 'pi pi-spin pi-spinner' :'pi pi-save'"
           label="保存"
+          type="submit"
           @click="onSubmit"
         />
       </div>
@@ -54,10 +76,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { Site, SiteParam, useSiteAPI } from '@/apis/useSiteAPI'
+import { useConfirm } from 'primevue/useconfirm'
+import { Site, FormSite, useSiteAPI } from '@/apis/useSiteAPI'
 
 const siteAPI = useSiteAPI()
 const toast = useToast()
+const confirm = useConfirm()
 
 const props = defineProps<{
   show: boolean,
@@ -68,6 +92,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'update:show', show: boolean): void,
   (event: 'saved', site: Site): void,
+  (event: 'removed', site: Site): void,
 }>()
 
 const _show = computed({
@@ -75,14 +100,12 @@ const _show = computed({
   set: (value: boolean) => emit('update:show', value),
 })
 
-const onClose = () => { _show.value = false }
-
-///
+/// //////////////////////////////////////////////////
 
 const isEdit = computed(() => props.site?.id > 0)
 
 const loading = ref<boolean>(false)
-const form = reactive<SiteParam>({
+const form = reactive<FormSite>({
   key: '',
   url: '',
   title: '',
@@ -90,6 +113,21 @@ const form = reactive<SiteParam>({
 })
 
 watch(_show, () => onReset())
+
+/// //////////////////////////////////////////////////
+
+const openDeleteDialog = () => {
+  confirm.require({
+    header: 'サイト設定の削除',
+    message: '全ての記録を削除します。よろしいですか？',
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger',
+    acceptLabel: '削除',
+    acceptIcon: 'pi pi-trash',
+    rejectLabel: 'キャンセル',
+    accept: async () => await onRemove(),
+  })
+}
 
 const onReset = () => {
   form.key = props.site?.key ?? ''
@@ -112,7 +150,13 @@ const onSubmit = async () => {
       ? await siteAPI.update(props.site?.id, form)
       : await siteAPI.create(form)
 
-    toast.add({ severity: 'success', summary: 'サイト情報を保存しました', detail: `[${newSite.key}] ${newSite.title}`, life: 3000 })
+    toast.add({
+      severity: 'success',
+      summary: 'サイト情報を保存しました',
+      detail: `[${newSite.id}] ${newSite.key}: ${newSite.title}`,
+      life: 3000
+    })
+
     emit('saved', newSite)
     onClose()
   } catch (err) {
@@ -122,4 +166,30 @@ const onSubmit = async () => {
   }
 }
 
+const onRemove = async () => {
+  loading.value = true
+
+  try {
+    const site = props.site
+    await siteAPI.remove(props.site?.id)
+
+    toast.add({
+      severity: 'success',
+      summary: 'サイト情報を削除しました',
+      detail: `[${site.id}] ${site.key}: ${site.title}`,
+      life: 3000
+    })
+
+    emit('removed', site)
+    onClose()
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+  } finally {
+    loading.value = false
+  }
+}
+
+const onClose = () => {
+  _show.value = false
+}
 </script>

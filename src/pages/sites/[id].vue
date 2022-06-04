@@ -29,7 +29,7 @@
       {{ query }}
     </div> -->
 
-    <SiteEditModal
+    <SiteEditDialog
       v-model:show="showEditModal"
       :site="site"
       @saved="onSaved"
