@@ -4,7 +4,7 @@
     class="org-dialog"
     :draggable="false"
     modal
-    :style="{ width: '480px' }"
+    :style="{ width: '960px' }"
     @keydown.enter.ctrl="onSubmit"
   >
     <template #header>
@@ -20,24 +20,116 @@
       </div>
     </template>
 
-    <div class="my-4">
-      <label class="block">識別記号* (英数字)</label>
-      <InputText
-        v-model="form.key"
-        autofocus
-        class="block w-full"
-        :disabled="loading"
-      />
-    </div>
+    <div class="grid m-0">
+      <div class="col-12 md:col-4">
+        <div class="flex-column grid">
+          <div class="col">
+            <label>識別記号* (英数字)</label>
+            <InputText
+              v-model="form.key"
+              autofocus
+              class="block w-full"
+              :disabled="loading"
+            />
+          </div>
 
-    <div class="my-4">
-      <label class="block">URL*</label>
-      <InputText v-model="form.url" class="block w-full" :disabled="loading" />
-    </div>
+          <div class="col">
+            <label>URL*</label>
+            <InputText
+              v-model="form.url"
+              class="block w-full"
+              :disabled="loading"
+            />
+          </div>
 
-    <div class="my-4">
-      <label class="block">タイトル*</label>
-      <InputText v-model="form.title" class="block w-full" :disabled="loading" />
+          <div class="col">
+            <label>タイトル*</label>
+            <InputText
+              v-model="form.title"
+              class="block w-full"
+              :disabled="loading"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-8">
+        <label>クエリ （{{ form.site_queries.length }}）</label>
+        <div class="flex-column grid">
+          <div
+            v-for="(query, _) in form.site_queries"
+            :key="_"
+            class="col"
+          >
+            <div class="border-1 border-400 border-solid flex-column grid m-0">
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-6rem">識別記号*</label>
+                  <div class="align-items-center flex w-full">
+                    <InputText
+                      v-model="query.key"
+                      class="block w-full"
+                      :disabled="loading"
+                    />
+
+                    <Button
+                      class="ml-2 p-button-danger p-button-rounded p-button-text"
+                      :disabled="loading"
+                      icon="pi pi-minus-circle"
+                      type="button"
+                      @click="removeSiteQuery(_)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-6rem">対象URL*</label>
+                  <InputText
+                    v-model="query.url_pattern"
+                    class="block w-full"
+                    :disabled="loading"
+                  />
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-6rem">モード*</label>
+                  <SelectButton
+                    v-model="query.processor"
+                    class="w-full"
+                    option-label="name"
+                    option-value="value"
+                    :options="processotTypes"
+                  />
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-6rem">抽出URL*</label>
+                  <InputText
+                    v-model="query.url_filter"
+                    class="block w-full"
+                    :disabled="loading"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <Button
+              class="p-button-outlined w-full"
+              icon="pi pi-plus"
+              label="追加"
+              @click="addSiteQuery"
+            />
+          </div>
+        </div>
+      </div>
     </div>
 
     <template #footer>
@@ -77,7 +169,7 @@
 import { computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
-import { Site, FormSite, useSiteAPI } from '@/apis/useSiteAPI'
+import { Site, FormSite, useSiteAPI, ProcessorType } from '@/apis/useSiteAPI'
 
 const siteAPI = useSiteAPI()
 const toast = useToast()
@@ -102,6 +194,11 @@ const _show = computed({
 
 /// //////////////////////////////////////////////////
 
+const processotTypes = ref<{ name: string, value: ProcessorType }[]>([
+  { name: 'リンク抽出', value: 'extract' },
+  { name: '画像DL', value: 'image' },
+])
+
 const isEdit = computed(() => props.site?.id > 0)
 
 const loading = ref<boolean>(false)
@@ -114,20 +211,21 @@ const form = reactive<FormSite>({
 
 watch(_show, () => onReset())
 
-/// //////////////////////////////////////////////////
-
-const openDeleteDialog = () => {
-  confirm.require({
-    header: 'サイト設定の削除',
-    message: '全ての記録を削除します。よろしいですか？',
-    icon: 'pi pi-info-circle',
-    acceptClass: 'p-button-danger',
-    acceptLabel: '削除',
-    acceptIcon: 'pi pi-trash',
-    rejectLabel: 'キャンセル',
-    accept: async () => await onRemove(),
+const addSiteQuery = () => {
+  form.site_queries.push({
+    key: '',
+    url_pattern: '',
+    processor: 'extract',
+    url_filter: '',
+    priority: 0,
   })
 }
+
+const removeSiteQuery = (id: number) => {
+  form.site_queries.splice(id, 1)
+}
+
+/// //////////////////////////////////////////////////
 
 const onReset = () => {
   form.key = props.site?.key ?? ''
@@ -187,6 +285,19 @@ const onRemove = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const openDeleteDialog = () => {
+  confirm.require({
+    header: 'サイト設定の削除',
+    message: '全ての記録を削除します。よろしいですか？',
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger',
+    acceptLabel: '削除',
+    acceptIcon: 'pi pi-trash',
+    rejectLabel: 'キャンセル',
+    accept: async () => await onRemove(),
+  })
 }
 
 const onClose = () => {

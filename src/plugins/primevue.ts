@@ -12,6 +12,8 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Toolbar from 'primevue/toolbar'
 import ConfirmDialog from 'primevue/confirmdialog'
+import Card from 'primevue/card'
+import SelectButton from 'primevue/selectbutton'
 
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -32,4 +34,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('Column', Column)
   nuxtApp.vueApp.component('Toolbar', Toolbar)
   nuxtApp.vueApp.component('ConfirmDialog', ConfirmDialog)
+  nuxtApp.vueApp.component('Card', Card)
+  nuxtApp.vueApp.component('SelectButton', SelectButton)
 })

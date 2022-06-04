@@ -1,10 +1,6 @@
 <template>
   <div>
     <div>
-      <nuxt-link class="no-underline-all" :to="{ name: 'index' }">
-        <Button class="m-1" label="Home" />
-      </nuxt-link>
-
       <Button class="m-1" label="Edit" @click="showEditModal = true" />
     </div>
 
@@ -32,26 +28,52 @@
     <SiteEditDialog
       v-model:show="showEditModal"
       :site="site"
+      @removed="onRemoved"
       @saved="onSaved"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 
 const route = useRoute()
+const router = useRouter()
+const toast = useToast()
 const siteAPI = useSiteAPI()
 
+/// ////////////////////////////////////////////////////////////
+
 const site = ref<Site>()
+const loading = ref<boolean>(false)
 
 onMounted(async () => {
-  const siteId = parseInt(route.params.id?.['0'])
-  site.value = await siteAPI.get(siteId)
+  const idStr = route.params.id as unknown as string
+  const id = parseInt(idStr)
+  await fetchSite(id)
 })
+
+const fetchSite = async (siteId: number) => {
+  loading.value = true
+
+  try {
+    site.value = await siteAPI.get(siteId)
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+  } finally {
+    loading.value = false
+  }
+}
+
+/// ////////////////////////////////////////////////////////////
 
 const showEditModal = ref<boolean>(false)
 const onSaved = (newSite: Site) => {
   site.value = newSite
+}
+
+const onRemoved = () => {
+  router.push({ name: 'index' })
 }
 </script>
