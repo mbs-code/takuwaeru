@@ -80,19 +80,19 @@ pub fn create(
         .field("priority")
         .field("created_at")
         .field("updated_at")
-        .values(&["?", "?", "?", "?", "?", "?", &quote(&now), &quote(&now)])
+        .values(&["?", "?", "?", "?", "?", "$1", &quote(&now), &quote(&now)])
         .sql()?
         .bind(site_id)
         .bind(key)
         .bind(url_pattern)
         .bind(processor)
         .bind(url_filter)
-        .bind(priority);
+        .bind_num(1, priority);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
     let site_query_id = conn.last_insert_rowid();
 
     #[cfg(debug_assertions)]
@@ -113,26 +113,20 @@ pub fn update(
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("site_queries")
-        .set("site_id", "?")
-        .set("key", "?")
-        .set("url_pattern", "?")
-        .set("processor", "?")
-        .set("url_filter", "?")
-        .set("priority", "?")
+        .set("site_id", quote(site_id))
+        .set("key", quote(key))
+        .set("url_pattern", quote(url_pattern))
+        .set("processor", quote(processor))
+        .set("url_filter", quote(url_filter))
+        .set("priority", quote(priority))
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_query_id))
-        .sql()?
-        .bind(site_id)
-        .bind(key)
-        .bind(url_pattern)
-        .bind(processor)
-        .bind(url_filter)
-        .bind(priority);
+        .sql()?;
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
 
     #[cfg(debug_assertions)]
     println!("site_query_id: {}", &site_query_id);
@@ -159,7 +153,7 @@ pub fn delete(
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
 
     Ok(())
 }

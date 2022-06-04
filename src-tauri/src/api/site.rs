@@ -90,7 +90,7 @@ pub fn create(
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
     let site_id = conn.last_insert_rowid();
 
     #[cfg(debug_assertions)]
@@ -121,7 +121,7 @@ pub fn update(
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
 
     #[cfg(debug_assertions)]
     println!("site_id: {}", &site_id);
@@ -137,7 +137,7 @@ pub fn delete(conn: &Connection, site_id: &i64) -> Result<(), Box<dyn Error>> {
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
 
-    let _ = conn.execute(&sql, [])?;
+    let _ = conn.execute_batch(&sql)?;
 
     Ok(())
 }
@@ -149,7 +149,7 @@ pub fn sync_site_queries(
     site_id: &i64,
     new_site_queries: &Vec<SiteQueryParam>,
 ) -> Result<(), Box<dyn Error>> {
-    // サイトに紐づくクエリを拾ってくる
+    // DBの値を拾ってくる（先に拾わないと余計なものを削除してしまう）
     let db_site_queries = api::site_query::list(
         &conn,
         &Some(site_id.clone()),
@@ -160,22 +160,23 @@ pub fn sync_site_queries(
         &None,
     )?;
 
-    // クエリ名を回して、紐づいていないものを追加
+    // ID 基準で、クエリをDBに突っ込む
     for site_query in new_site_queries {
-        // DB に存在するか確認
-        let has = db_site_queries
-            .iter()
-            .filter(|&db_site_query| {
-                site_query.key.eq(&db_site_query.key)
-                    && site_query.url_pattern.eq(&db_site_query.url_pattern)
-                    && site_query.processor.eq(&db_site_query.processor)
-                    && site_query.url_filter.eq(&db_site_query.url_filter)
-                    && site_query.priority.eq(&db_site_query.priority)
-            })
-            .count();
-
-        // 一つも無いなら追加
-        if has == 0 {
+        // ID があったら create, 別なら update
+        let site_query_id = site_query.id.unwrap_or(0);
+        println!("qid {:?}", site_query_id);
+        if site_query_id > 0 {
+            api::site_query::update(
+                &conn,
+                &site_query_id,
+                &site_id,
+                &site_query.key,
+                &site_query.url_pattern,
+                &site_query.processor,
+                &site_query.url_filter,
+                &site_query.priority,
+            )?;
+        } else {
             api::site_query::create(
                 &conn,
                 &site_id,
@@ -188,21 +189,16 @@ pub fn sync_site_queries(
         }
     }
 
-    // 逆に紐づきを回して、タグに無いものを削除
+    // DBレコードを回して、クエリに無いものを削除
     for db_site_query in db_site_queries {
-        // param名に存在するか確認
+        // クエリの中に ID が存在するか確認
         let has = new_site_queries
             .iter()
-            .filter(|&site_query| {
-                site_query.key.eq(&db_site_query.key)
-                    && site_query.url_pattern.eq(&db_site_query.url_pattern)
-                    && site_query.processor.eq(&db_site_query.processor)
-                    && site_query.url_pattern.eq(&db_site_query.url_pattern)
-                    && site_query.priority.eq(&db_site_query.priority)
-            })
+            .filter(|&site_query| db_site_query.id.eq(&site_query.id.unwrap_or(0)))
             .count();
 
         // 一つも無いなら削除
+        println!("has {:?}", has);
         if has == 0 {
             api::site_query::delete(&conn, &Some(db_site_query.id), &None)?;
         }

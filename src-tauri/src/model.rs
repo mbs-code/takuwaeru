@@ -89,6 +89,7 @@ pub struct SiteParam {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SiteQueryParam {
+    pub id: Option<i64>, // id 一致確認用（無くても気にしない）
     pub key: String,
     pub url_pattern: String,
     pub processor: String,
