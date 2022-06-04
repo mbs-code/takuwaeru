@@ -103,6 +103,7 @@ const onChange = async (event: DataTablePageEvent) => {
 /// ////////////////////////////////////////////////////////////
 
 const selectedSite = ref<Site>()
+
 const showEditDialog = ref<boolean>(false)
 const openEditDialog = (selected?: Site) => {
   selectedSite.value = selected

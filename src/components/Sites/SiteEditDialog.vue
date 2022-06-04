@@ -61,7 +61,7 @@
             :key="_"
             class="col"
           >
-            <div class="border-1 border-400 border-solid flex-column grid m-0">
+            <div class="flex-column grid m-0 simple-border">
               <div class="col">
                 <div class="align-items-center flex">
                   <label class="w-6rem">識別記号*</label>
@@ -86,9 +86,8 @@
               <div class="col">
                 <div class="align-items-center flex">
                   <label class="w-6rem">対象URL*</label>
-                  <InputText
+                  <InputTextRegex
                     v-model="query.url_pattern"
-                    class="block w-full"
                     :disabled="loading"
                   />
                 </div>
@@ -110,9 +109,8 @@
               <div class="col">
                 <div class="align-items-center flex">
                   <label class="w-6rem">抽出URL*</label>
-                  <InputText
+                  <InputTextRegex
                     v-model="query.url_filter"
-                    class="block w-full"
                     :disabled="loading"
                   />
                 </div>

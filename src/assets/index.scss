@@ -10,6 +10,10 @@ body {
 
 ///
 
+.simple-border {
+  @include styleclass('border-1 border-400 border-solid border-round-sm');
+}
+
 .no-underline-all {
   @include styleclass('no-underline hover:no-underline focus:no-underline active:no-underline');
 }
