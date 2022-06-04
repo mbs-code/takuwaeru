@@ -81,11 +81,11 @@ pub fn create(
         .field("title")
         .field("created_at")
         .field("updated_at")
-        .values(&["?", "?", "?", &quote(&now), &quote(&now)])
+        .values(&[":key:", ":url:", ":title:", &quote(&now), &quote(&now)])
         .sql()?
-        .bind(key)
-        .bind(url)
-        .bind(title);
+        .bind_name(&"key", key)
+        .bind_name(&"url", url)
+        .bind_name(&"title", title);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
@@ -108,15 +108,15 @@ pub fn update(
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("sites")
-        .set("key", "?")
-        .set("url", "?")
-        .set("title", "?")
+        .set("key", ":key:")
+        .set("url", ":url")
+        .set("title", ":title")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_id))
         .sql()?
-        .bind(key)
-        .bind(url)
-        .bind(title);
+        .bind_name(&"key", key)
+        .bind_name(&"url", url)
+        .bind_name(&"title", title);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
