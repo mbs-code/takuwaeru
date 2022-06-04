@@ -88,11 +88,17 @@ const onBlur = () => {
 
 const diffText = ref<string>()
 const diffResultText = computed(() => {
-  const regex = new RegExp(_value.value)
-  return (diffText.value ?? '')
-    .split('\n')
-    .map(line => line ? (regex.test(line) ? '○' : '✕') : '')
-    .join('\n')
+  try {
+    const regex = new RegExp(_value.value)
+    return (diffText.value ?? '')
+      .split('\n')
+      .map(line => line ? (regex.test(line) ? '○' : '✕') : '')
+      .join('\n')
+  } catch (err) {
+    return (diffText.value ?? '')
+      .split('\n')
+      .map(line => 'Err').join('\n')
+  }
 })
 
 watch(showRegexDialog, () => {

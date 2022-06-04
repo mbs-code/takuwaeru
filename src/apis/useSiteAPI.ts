@@ -27,6 +27,7 @@ export type Site = {
 ///
 
 export type FormSiteQuery = {
+  id?: number,
   key: string,
   url_pattern: string,
   processor: ProcessorType,

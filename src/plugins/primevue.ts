@@ -15,6 +15,7 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import Card from 'primevue/card'
 import SelectButton from 'primevue/selectbutton'
 import Textarea from 'primevue/textarea'
+import InputNumber from 'primevue/inputnumber'
 
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -38,4 +39,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('Card', Card)
   nuxtApp.vueApp.component('SelectButton', SelectButton)
   nuxtApp.vueApp.component('Textarea', Textarea)
+  nuxtApp.vueApp.component('InputNumber', InputNumber)
 })

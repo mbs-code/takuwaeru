@@ -115,6 +115,20 @@
                   />
                 </div>
               </div>
+
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-6rem">優先度*</label>
+
+                  <InputNumber
+                    v-model="query.priority"
+                    class="w-full"
+                    mode="decimal"
+                    show-buttons
+                    :step="10"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -230,6 +244,7 @@ const onReset = () => {
   form.url = props.site?.url ?? ''
   form.title = props.site?.title ?? ''
   form.site_queries = props.site?.site_queries.map(query => ({
+    id: query.id ?? 0,
     key: query.key ?? '',
     url_pattern: query.url_pattern ?? '',
     processor: query.processor ?? 'extract',
