@@ -186,7 +186,7 @@ impl QueueWithPage {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueueParam {
-    pub site_id: i64,
-    pub page_id: i64,
+    pub url: String,
     pub priority: i64,
+    pub parent_id: Option<i64>,
 }

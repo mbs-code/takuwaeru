@@ -11,7 +11,7 @@ pub fn page_count(site_id: Option<i64>) -> Result<i64, String> {
     let do_steps = || -> Result<i64, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let count = api::page::list_count(&conn, &site_id)?;
+        let count = api::page::list_count(&conn, &site_id, &None)?;
         Ok(count)
     }();
 
@@ -59,25 +59,7 @@ pub fn page_get(page_id: i64) -> Result<Page, String> {
     return do_steps.map_err(|s| s.to_string());
 }
 
-#[tauri::command]
-pub fn page_create(param: PageParam) -> Result<Page, String> {
-    let do_steps = || -> Result<Page, Box<dyn Error>> {
-        let conn = get_conn()?.lock()?;
-
-        let page_id = api::page::create(
-            &conn,
-            &param.site_id,
-            &param.parent_id,
-            &param.url,
-            &param.title,
-        )?;
-
-        let new_page = api::page::get(&conn, &page_id)?;
-        Ok(new_page)
-    }();
-
-    return do_steps.map_err(|s| s.to_string());
-}
+// NOTE page_create は queue 経由で行う必要がある
 
 #[tauri::command]
 pub fn page_update(page_id: i64, param: PageParam) -> Result<Page, String> {

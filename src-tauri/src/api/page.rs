@@ -5,11 +5,19 @@ use sql_builder::{bind::Bind, quote, SqlBuilder};
 
 use crate::{db::chrono_now, model::Page};
 
-pub fn list_count(conn: &Connection, site_id: &Option<i64>) -> Result<i64, Box<dyn Error>> {
-    let mut builder = SqlBuilder::select_from("sites");
+pub fn list_count(
+    conn: &Connection,
+    site_id: &Option<i64>,
+    url: &Option<String>,
+) -> Result<i64, Box<dyn Error>> {
+    let mut builder = SqlBuilder::select_from("pages");
 
     if let Some(v_site_id) = site_id {
         builder.and_where("site_id = ?".bind(&v_site_id));
+    }
+
+    if let Some(v_url) = url {
+        builder.and_where("url = ?".bind(v_url));
     }
 
     builder.order_by("id", false);
@@ -131,7 +139,6 @@ pub fn update(
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("pages")
-        .set("page_id", ":page_id:")
         .set("site_id", ":site_id:")
         .set("parent_id", ":parent_id:")
         .set("url", ":url:")

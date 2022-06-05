@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::{
-    api::{self},
+    api,
     db::get_conn,
     model::{QueueParam, QueueWithPage},
 };
@@ -67,36 +67,32 @@ pub fn queue_get(queue_id: i64) -> Result<QueueWithPage, String> {
 }
 
 #[tauri::command]
-pub fn queue_create(param: QueueParam) -> Result<QueueWithPage, String> {
+pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPage, String> {
     let do_steps = || -> Result<QueueWithPage, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let queue_id = api::queue::create(&conn, &param.site_id, &param.page_id, &param.priority)?;
+        // 存在チェックを行う
+        let page_count = api::page::list_count(&conn, &Some(site_id), &Some(param.url.clone()))?;
+        if page_count > 0 {
+            panic!("This URL already exists");
+        }
 
-        let new_queue = api::queue::get(&conn, &queue_id)?;
-        let page = api::page::get(&conn, &new_queue.page_id)?;
-        Ok(QueueWithPage::new(new_queue, page))
-    }();
+        // 親IDがあるなら取得する
+        let parent_id = match param.parent_id {
+            Some(v) => Some(v),
+            None => None,
+        };
 
-    return do_steps.map_err(|s| s.to_string());
-}
+        // ページを作成する
+        let new_page_id = api::page::create(&conn, &site_id, &parent_id, &param.url, &None)?;
 
-#[tauri::command]
-pub fn queue_update(queue_id: i64, param: QueueParam) -> Result<QueueWithPage, String> {
-    let do_steps = || -> Result<QueueWithPage, Box<dyn Error>> {
-        let conn = get_conn()?.lock()?;
+        // キューに挿入する
+        let new_queue_id = api::queue::create(&conn, &site_id, &new_page_id, &param.priority)?;
 
-        let _ = api::queue::update(
-            &conn,
-            &queue_id,
-            &param.site_id,
-            &param.page_id,
-            &param.priority,
-        )?;
-
-        let new_queue = api::queue::get(&conn, &queue_id)?;
-        let page = api::page::get(&conn, &new_queue.page_id)?;
-        Ok(QueueWithPage::new(new_queue, page))
+        // 返却値生成
+        let new_queue = api::queue::get(&conn, &new_queue_id)?;
+        let new_page = api::page::get(&conn, &new_page_id)?;
+        Ok(QueueWithPage::new(new_queue, new_page))
     }();
 
     return do_steps.map_err(|s| s.to_string());
