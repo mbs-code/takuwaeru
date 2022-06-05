@@ -147,7 +147,7 @@ pub fn update(
         .and_where("id = ?".bind(page_id))
         .sql()?
         .bind_name(&"site_id", site_id)
-        .bind_name(&"parent_id", parent_page_id)
+        .bind_name(&"parent_page_id", parent_page_id)
         .bind_name(&"url", url)
         .bind_name(&"title", title);
 
