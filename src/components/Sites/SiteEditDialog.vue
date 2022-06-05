@@ -112,6 +112,7 @@
                     v-model="query.dom_selector"
                     class="block w-full"
                     :disabled="loading"
+                    placeholder="[href],[src]"
                   />
                 </div>
               </div>
