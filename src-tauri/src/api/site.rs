@@ -175,6 +175,7 @@ pub fn sync_site_queries(
                 &site_query.key,
                 &site_query.url_pattern,
                 &site_query.processor,
+                &site_query.dom_selector,
                 &site_query.url_filter,
                 &site_query.priority,
             )?;
@@ -185,6 +186,7 @@ pub fn sync_site_queries(
                 &site_query.key,
                 &site_query.url_pattern,
                 &site_query.processor,
+                &site_query.dom_selector,
                 &site_query.url_filter,
                 &site_query.priority,
             )?;

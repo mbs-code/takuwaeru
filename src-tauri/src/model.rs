@@ -30,6 +30,7 @@ pub struct SiteQuery {
     pub key: String,
     pub url_pattern: String,
     pub processor: String,
+    pub dom_selector: Option<String>,
     pub url_filter: String,
     pub priority: i64,
     pub created_at: String,
@@ -43,10 +44,11 @@ impl SiteQuery {
             key: row.get(2)?,
             url_pattern: row.get(3)?,
             processor: row.get(4)?,
-            url_filter: row.get(5)?,
-            priority: row.get(6)?,
-            created_at: row.get(7)?,
-            updated_at: row.get(8)?,
+            dom_selector: row.get(5)?,
+            url_filter: row.get(6)?,
+            priority: row.get(7)?,
+            created_at: row.get(8)?,
+            updated_at: row.get(9)?,
         })
     }
 }
@@ -93,6 +95,7 @@ pub struct SiteQueryParam {
     pub key: String,
     pub url_pattern: String,
     pub processor: String,
+    pub dom_selector: Option<String>,
     pub url_filter: String,
     pub priority: i64,
 }

@@ -184,8 +184,7 @@ const onExecute = async () => {
       case 'extract':
         await (async () => {
           // URL を全て抜き出す
-          const domQuery = '[href],[src]'
-          const links = ParseUtil.extractLinks($, domQuery, query.url_filter)
+          const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
 
           // キューに追加する（失敗する可能性あり）
           for (const link of links) {

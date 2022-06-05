@@ -105,6 +105,16 @@
                   />
                 </div>
               </div>
+              <div class="col">
+                <div class="align-items-center flex">
+                  <label class="w-8rem">対象DOM</label>
+                  <InputText
+                    v-model="query.dom_selector"
+                    class="block w-full"
+                    :disabled="loading"
+                  />
+                </div>
+              </div>
 
               <div class="col">
                 <div class="align-items-center flex">
@@ -228,6 +238,7 @@ const addSiteQuery = () => {
     key: '',
     url_pattern: '',
     processor: 'extract',
+    dom_selector: '',
     url_filter: '',
     priority: 0,
   })
@@ -248,6 +259,7 @@ const onReset = () => {
     key: query.key ?? '',
     url_pattern: query.url_pattern ?? '',
     processor: query.processor ?? 'extract',
+    dom_selector: query.dom_selector ?? '',
     url_filter: query.url_filter ?? '',
     priority: query.priority ?? 0,
   })) ?? []

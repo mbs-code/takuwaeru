@@ -7,7 +7,8 @@ export type SiteQuery = {
   site_id: number
   key: string
   url_pattern: string
-  processor: ProcessorType,
+  processor: ProcessorType
+  dom_selector?: string
   url_filter: string
   priority: number
   created_at: string
@@ -27,26 +28,27 @@ export type Site = {
 ///
 
 export type FormSiteQuery = {
-  id?: number,
-  key: string,
-  url_pattern: string,
-  processor: ProcessorType,
-  url_filter: string,
-  priority: number,
+  id?: number
+  key: string
+  url_pattern: string
+  processor: ProcessorType
+  dom_selector?: string
+  url_filter: string
+  priority: number
 }
 
 export type FormSite = {
-  key: string,
-  url: string,
-  title?: string,
+  key: string
+  url: string
+  title?: string
   site_queries: FormSiteQuery[]
 }
 
 export type SearchSite = {
-  page: number,
-  perPage: number,
-  order?: string,
-  desc?: boolean,
+  page: number
+  perPage: number
+  order?: string
+  desc?: boolean
 }
 
 ///

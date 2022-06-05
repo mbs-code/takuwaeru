@@ -69,6 +69,7 @@ pub fn create(
     key: &String,
     url_pattern: &String,
     processor: &String,
+    dom_selector: &Option<String>,
     url_filter: &String,
     priority: &i64,
 ) -> Result<i64, Box<dyn Error>> {
@@ -78,6 +79,7 @@ pub fn create(
         .field("key")
         .field("url_pattern")
         .field("processor")
+        .field("dom_selector")
         .field("url_filter")
         .field("priority")
         .field("created_at")
@@ -87,6 +89,7 @@ pub fn create(
             ":key:",
             ":url_pattern:",
             ":processor:",
+            ":dom_selector:",
             ":url_filter:",
             ":priority:",
             &quote(&now),
@@ -97,6 +100,7 @@ pub fn create(
         .bind_name(&"key", key)
         .bind_name(&"url_pattern", url_pattern)
         .bind_name(&"processor", processor)
+        .bind_name(&"dom_selector", dom_selector)
         .bind_name(&"url_filter", url_filter)
         .bind_name(&"priority", priority);
 
@@ -119,6 +123,7 @@ pub fn update(
     key: &String,
     url_pattern: &String,
     processor: &String,
+    dom_selector: &Option<String>,
     url_filter: &String,
     priority: &i64,
 ) -> Result<i64, Box<dyn Error>> {
@@ -128,6 +133,7 @@ pub fn update(
         .set("key", ":key:")
         .set("url_pattern", ":url_pattern:")
         .set("processor", ":processor:")
+        .set("dom_selector", ":dom_selector:")
         .set("url_filter", ":url_filter:")
         .set("priority", ":priority:")
         .set("updated_at", &quote(&now))
@@ -137,6 +143,7 @@ pub fn update(
         .bind_name(&"key", key)
         .bind_name(&"url_pattern", url_pattern)
         .bind_name(&"processor", processor)
+        .bind_name(&"dom_selector", dom_selector)
         .bind_name(&"url_filter", url_filter)
         .bind_name(&"priority", priority);
 

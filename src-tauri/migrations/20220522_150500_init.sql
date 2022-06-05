@@ -13,6 +13,7 @@ CREATE TABLE site_queries (
   "key" TEXT NOT NULL,
   "url_pattern" TEXT NOT NULL,
   "processor" TEXT NOT NULL,
+  "dom_selector" TEXT,
   "url_filter" TEXT NOT NULL,
   "priority" INTEGER NOT NULL,
   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
