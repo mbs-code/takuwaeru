@@ -185,6 +185,12 @@ impl QueueWithPage {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum QueueWithPageOrBool {
+    Value(QueueWithPage),
+    Bool(bool),
+}
+
 ///
 
 #[derive(Debug, Serialize, Deserialize)]

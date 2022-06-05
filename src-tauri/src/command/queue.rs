@@ -1,11 +1,9 @@
 use std::error::Error;
 
-use string_error::new_err;
-
 use crate::{
     api,
     db::get_conn,
-    model::{QueueParam, QueueWithPage},
+    model::{QueueParam, QueueWithPage, QueueWithPageOrBool},
 };
 
 #[tauri::command]
@@ -69,14 +67,15 @@ pub fn queue_get(queue_id: i64) -> Result<QueueWithPage, String> {
 }
 
 #[tauri::command]
-pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPage, String> {
-    let do_steps = || -> Result<QueueWithPage, Box<dyn Error>> {
+pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPageOrBool, String> {
+    let do_steps = || -> Result<QueueWithPageOrBool, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
         // 存在チェックを行う
         let page_count = api::page::list_count(&conn, &Some(site_id), &Some(param.url.clone()))?;
         if page_count > 0 {
-            Err(new_err("This URL already exists"))?
+            return Ok(QueueWithPageOrBool::Bool(false));
+            // Err(new_err("This URL already exists"))?
         }
 
         // 親IDがあるなら取得する
@@ -94,7 +93,9 @@ pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPage, Stri
         // 返却値生成
         let new_queue = api::queue::get(&conn, &new_queue_id)?;
         let new_page = api::page::get(&conn, &new_page_id)?;
-        Ok(QueueWithPage::new(new_queue, new_page))
+        Ok(QueueWithPageOrBool::Value(QueueWithPage::new(
+            new_queue, new_page,
+        )))
     }();
 
     return do_steps.map_err(|s| s.to_string());

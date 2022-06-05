@@ -75,7 +75,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sql-builder",
- "string-error",
  "tauri",
  "tauri-build",
 ]
@@ -2505,12 +2504,6 @@ checksum = "dbe866e1e51e8260c9eed836a042a5e7f6726bb2b411dffeaa712e19c388f23b"
 dependencies = [
  "loom",
 ]
-
-[[package]]
-name = "string-error"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "439558b73299d7afdf52c36399c3c812cca10fe5ca08429f38815df5bacf3ef7"
 
 [[package]]
 name = "string_cache"
