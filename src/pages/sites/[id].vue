@@ -14,25 +14,31 @@
       />
 
       <Button class="m-1" label="Peek" @click="onPeek" />
+
+      <Button class="m-1" label="Execute" @click="onExecute" />
     </div>
 
     <hr>
 
     <div class="m-2">
+      <div>選択中：</div>
       {{ selectedQueue }}
     </div>
 
     <hr>
 
     <div class="m-2">
+      <div>サイト：</div>
       {{ site }}
     </div>
 
     <div class="m-2">
+      <div>ページ：</div>
       {{ pages }}
     </div>
 
     <div class="m-2">
+      <div>キュー：</div>
       {{ queues }}
     </div>
 
@@ -46,10 +52,13 @@
 </template>
 
 <script setup lang="ts">
+import { fetch, ResponseType } from '@tauri-apps/api/http'
+import { load as cheerioLoad } from 'cheerio'
 import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
 import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
+import ParseUtil from '~~/src/utils/ParseUtil'
 
 const route = useRoute()
 const router = useRouter()
@@ -130,24 +139,84 @@ const onReset = async () => {
     selectedQueue.value = null
     await pageAPI.clear(site.value.id)
 
-    // タイトルを作成する
-    const page = await pageAPI.create({
-      site_id: site.value.id,
+    // ページを作成して、キューに追加する
+    await queueAPI.add(site.value.id, {
       url: site.value.url,
-      title: site.value.title, // TODO: 仮追加
-    })
-
-    // キューに追加する
-    await queueAPI.create({
-      site_id: site.value.id,
-      page_id: page.id,
       priority: 0,
     })
+
+    // 更新
+    await fetchSite()
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
     loading.value = false
   }
+}
+
+/// ////////////////////////////////////////////////////////////
+
+const onExecute = async () => {
+  // peek したキューを取り出す // TODO:
+  const queue = selectedQueue.value
+  if (!queue) { throw new Error('Peeked value is empty') }
+  const page = queue.page
+
+  // http を叩いて取ってくる
+  const data = await fetch(page.url, {
+    method: 'GET',
+    responseType: ResponseType.Text,
+  })
+
+  // dom変換する
+  const body = data.data as string
+  const $ = cheerioLoad(body)
+
+  // クエリを実行する
+  const queries = site.value.site_queries
+  for (const query of queries) {
+    // パターンと一致しているか
+    const pattern = new RegExp(query.url_pattern)
+    if (!pattern.test(page.url)) { continue }
+
+    // モードによって抽出する
+    switch (query.processor) {
+      case 'extract':
+        await (async () => {
+          // URL を全て抜き出す
+          const domQuery = '[href],[src]'
+          const links = ParseUtil.extractLinks($, domQuery, query.url_filter)
+
+          // キューに追加する（失敗する可能性あり）
+          for (const link of links) {
+            await queueAPI.add(site.value.id, {
+              url: link,
+              priority: query.priority,
+            })
+          }
+        })()
+        break
+      case 'image':
+      default:
+        throw new Error(`Illegal process : ${query.processor}`)
+    }
+  }
+
+  // タイトルを追記する
+  const title = $('title').text()
+  page.title = title
+
+  // ページを保存する
+  await pageAPI.update(page.id, {
+    site_id: page.site_id,
+    parent_id: page.parent_id,
+    url: page.url,
+    title: page.title,
+  })
+
+  // キューからページを削除する
+  await queueAPI.remove(queue.id)
+  selectedQueue.value = null
 
   // 更新
   await fetchSite()

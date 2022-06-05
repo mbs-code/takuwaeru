@@ -14,17 +14,17 @@ export type Queue = {
 ///
 
 export type FormQueue = {
-  site_id: number,
-  page_id: number,
-  priority: number,
+  url: string
+  priority: number
+  parent?: number
 }
 
 export type SearchQueue = {
-  siteId: number,
-  page: number,
-  perPage: number,
-  order?: string,
-  desc?: boolean,
+  siteId: number
+  page: number
+  perPage: number
+  order?: string
+  desc?: boolean
 }
 
 ///
@@ -49,23 +49,16 @@ export const useQueueAPI = () => {
     return queue
   }
 
-  const create = async (param: FormQueue) => {
-    const queue: Queue = await invoke('queue_create', {
-      param,
-    })
-    return queue
-  }
-
-  const update = async (queueId: number, param: FormQueue) => {
-    const queue: Queue = await invoke('queue_update', {
-      pageId: queueId, param,
+  const add = async (siteId: number, param: FormQueue) => {
+    const queue: Queue = await invoke('queue_push', {
+      siteId, param,
     })
     return queue
   }
 
   const remove = async (queueId: number) => {
     const result: boolean = await invoke('queue_delete', {
-      pageId: queueId,
+      queueId,
     })
     return result
   }
@@ -81,8 +74,7 @@ export const useQueueAPI = () => {
     count,
     list,
     get,
-    create,
-    update,
+    add,
     remove,
     clear,
   }
