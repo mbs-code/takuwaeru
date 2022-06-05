@@ -50,6 +50,7 @@
 
 <script setup lang="ts">
 import { fetch, ResponseType } from '@tauri-apps/api/http'
+import { writeBinaryFile } from '@tauri-apps/api/fs'
 import { load as cheerioLoad } from 'cheerio'
 import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
@@ -184,6 +185,34 @@ const onExecute = async () => {
         })()
         break
       case 'image':
+        await (async () => {
+          // URL を全て抜き出す
+          const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
+
+          // 画像を保存する
+          for (const link of links) {
+            // 画像を取得する
+            const blobRes = await fetch(link, {
+              method: 'GET',
+              responseType: ResponseType.Binary,
+              headers: {
+                Referer: page.url
+              }
+            })
+
+            // ファイル名を生成する
+            const u = new URL(link)
+            const pathname = u.pathname
+            const lastname = pathname.slice(Math.max(0, pathname.lastIndexOf('/') + 1))
+
+            // バイナリを保存する
+            await writeBinaryFile({
+              path: lastname,
+              contents: blobRes.data as Iterable<number>
+            })
+          }
+        })()
+        break
       default:
         throw new Error(`Illegal process : ${query.processor}`)
     }
