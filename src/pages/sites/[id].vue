@@ -50,8 +50,10 @@
 
 <script setup lang="ts">
 import { fetch, ResponseType } from '@tauri-apps/api/http'
-import { writeBinaryFile } from '@tauri-apps/api/fs'
+import { createDir, writeBinaryFile } from '@tauri-apps/api/fs'
+import { join as pathJoin } from '@tauri-apps/api/path'
 import { load as cheerioLoad } from 'cheerio'
+import sanitize from 'sanitize-filename'
 import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
@@ -160,6 +162,10 @@ const onExecute = async () => {
   const body = data.data as string
   const $ = cheerioLoad(body)
 
+  // タイトルを取得する
+  const title = $('title').text()
+  page.title = title
+
   // クエリを実行する
   const queries = site.value.site_queries
   for (const query of queries) {
@@ -176,6 +182,7 @@ const onExecute = async () => {
 
           // キューに追加する（失敗する可能性あり）
           for (const link of links) {
+            // TODO: 失敗したら false
             await queueAPI.add(site.value.id, {
               url: link,
               priority: query.priority,
@@ -186,6 +193,9 @@ const onExecute = async () => {
         break
       case 'download':
         await (async () => {
+          // 親を取り出す // TODO:
+          // const parentPage = await pageAPI.get(page.parent_page_id)
+
           // URL を全て抜き出す
           const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
 
@@ -205,9 +215,20 @@ const onExecute = async () => {
             const pathname = u.pathname
             const lastname = pathname.slice(Math.max(0, pathname.lastIndexOf('/') + 1))
 
+            // ディレクトリチェック
+            const dirPath = await pathJoin(
+              sanitize(site.value.title || 'unknown'),
+              sanitize(page.title || 'unknown'),
+            )
+            await createDir(dirPath, { recursive: true })
+
             // バイナリを保存する
+            const filePath = await pathJoin(
+              dirPath,
+              sanitize(lastname || new Date().getTime().toString()),
+            )
             await writeBinaryFile({
-              path: lastname,
+              path: filePath,
               contents: blobRes.data as Iterable<number>
             })
           }
@@ -218,14 +239,10 @@ const onExecute = async () => {
     }
   }
 
-  // タイトルを追記する
-  const title = $('title').text()
-  page.title = title
-
   // ページを保存する
   await pageAPI.update(page.id, {
     site_id: page.site_id,
-    parent_id: page.parent_id,
+    parent_page_id: page.parent_page_id,
     url: page.url,
     title: page.title,
   })

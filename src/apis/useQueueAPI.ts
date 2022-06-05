@@ -50,7 +50,7 @@ export const useQueueAPI = () => {
   }
 
   const add = async (siteId: number, param: FormQueue) => {
-    const queue: Queue = await invoke('queue_push', {
+    const queue: Queue | false = await invoke('queue_push', {
       siteId, param,
     })
     return queue

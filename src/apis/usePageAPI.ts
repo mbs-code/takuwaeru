@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 export type Page = {
   id: number
   site_id: number
-  parent_id?: number
+  parent_page_id?: number
   url: string
   title ?: string
   created_at: string
@@ -14,7 +14,7 @@ export type Page = {
 
 export type FormPage = {
   site_id: number,
-  parent_id?: number,
+  parent_page_id?: number,
   url: string,
   title?: string,
 }
