@@ -159,6 +159,32 @@ impl Queue {
 ///
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct QueueWithPage {
+    pub id: i64,
+    pub site_id: i64,
+    pub page_id: i64,
+    pub priority: i64,
+    pub created_at: String,
+    pub updated_at: String,
+    pub page: Page,
+}
+impl QueueWithPage {
+    pub fn new(queue: Queue, page: Page) -> QueueWithPage {
+        QueueWithPage {
+            id: queue.id,
+            site_id: queue.site_id,
+            page_id: queue.page_id,
+            priority: queue.priority,
+            created_at: queue.created_at,
+            updated_at: queue.updated_at,
+            page,
+        }
+    }
+}
+
+///
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct QueueParam {
     pub site_id: i64,
     pub page_id: i64,
