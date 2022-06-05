@@ -87,6 +87,8 @@ pub fn create(
         .field("site_id")
         .field("page_id")
         .field("priority")
+        .field("created_at")
+        .field("updated_at")
         .values(&[
             ":site_id:",
             ":page_id:",
