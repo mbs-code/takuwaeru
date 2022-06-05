@@ -96,7 +96,6 @@ pub struct SiteQueryParam {
     pub url_filter: String,
     pub priority: i64,
 }
-
 /// ////////////////////////////////////////////////////////////
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -131,4 +130,37 @@ pub struct PageParam {
     pub parent_id: Option<i64>,
     pub url: String,
     pub title: Option<String>,
+}
+
+/// ////////////////////////////////////////////////////////////
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Queue {
+    pub id: i64,
+    pub site_id: i64,
+    pub page_id: i64,
+    pub priority: i64,
+    pub created_at: String,
+    pub updated_at: String,
+}
+impl Queue {
+    pub fn by_row(row: &Row) -> Result<Queue, Error> {
+        Ok(Queue {
+            id: row.get(0)?,
+            site_id: row.get(1)?,
+            page_id: row.get(2)?,
+            priority: row.get(3)?,
+            created_at: row.get(4)?,
+            updated_at: row.get(5)?,
+        })
+    }
+}
+
+///
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QueueParam {
+    pub site_id: i64,
+    pub page_id: i64,
+    pub priority: i64,
 }

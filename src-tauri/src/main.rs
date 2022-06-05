@@ -22,6 +22,13 @@ fn main() {
             command::page::page_update,
             command::page::page_delete,
             command::page::page_clear,
+            command::queue::queue_count,
+            command::queue::queue_list,
+            command::queue::queue_get,
+            command::queue::queue_create,
+            command::queue::queue_update,
+            command::queue::queue_delete,
+            command::queue::queue_clear,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
