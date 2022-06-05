@@ -178,6 +178,7 @@ const onExecute = async () => {
             await queueAPI.add(site.value.id, {
               url: link,
               priority: query.priority,
+              parent_page_id: page.id,
             })
           }
         })()

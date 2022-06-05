@@ -70,7 +70,7 @@ pub fn page_update(page_id: i64, param: PageParam) -> Result<Page, String> {
             &conn,
             &page_id,
             &param.site_id,
-            &param.parent_id,
+            &param.parent_page_id,
             &param.url,
             &param.title,
         )?;

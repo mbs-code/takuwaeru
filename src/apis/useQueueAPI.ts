@@ -16,7 +16,7 @@ export type Queue = {
 export type FormQueue = {
   url: string
   priority: number
-  parent?: number
+  parent_page_id?: number
 }
 
 export type SearchQueue = {

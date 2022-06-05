@@ -78,13 +78,13 @@ pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPage, Stri
         }
 
         // 親IDがあるなら取得する
-        let parent_id = match param.parent_id {
+        let parent_page_id = match param.parent_page_id {
             Some(v) => Some(v),
             None => None,
         };
 
         // ページを作成する
-        let new_page_id = api::page::create(&conn, &site_id, &parent_id, &param.url, &None)?;
+        let new_page_id = api::page::create(&conn, &site_id, &parent_page_id, &param.url, &None)?;
 
         // キューに挿入する
         let new_queue_id = api::queue::create(&conn, &site_id, &new_page_id, &param.priority)?;

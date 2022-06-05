@@ -91,21 +91,21 @@ pub fn get(conn: &Connection, page_id: &i64) -> Result<Page, Box<dyn Error>> {
 pub fn create(
     conn: &Connection,
     site_id: &i64,
-    parent_id: &Option<i64>,
+    parent_page_id: &Option<i64>,
     url: &String,
     title: &Option<String>,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::insert_into("pages")
         .field("site_id")
-        .field("parent_id")
+        .field("parent_page_id")
         .field("url")
         .field("title")
         .field("created_at")
         .field("updated_at")
         .values(&[
             ":site_id:",
-            ":parent_id:",
+            ":parent_page_id:",
             ":url:",
             ":title:",
             &quote(&now),
@@ -113,7 +113,7 @@ pub fn create(
         ])
         .sql()?
         .bind_name(&"site_id", site_id)
-        .bind_name(&"parent_id", parent_id)
+        .bind_name(&"parent_page_id", parent_page_id)
         .bind_name(&"url", url)
         .bind_name(&"title", title);
 
@@ -133,21 +133,21 @@ pub fn update(
     conn: &Connection,
     page_id: &i64,
     site_id: &i64,
-    parent_id: &Option<i64>,
+    parent_page_id: &Option<i64>,
     url: &String,
     title: &Option<String>,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("pages")
         .set("site_id", ":site_id:")
-        .set("parent_id", ":parent_id:")
+        .set("parent_page_id", ":parent_page_id:")
         .set("url", ":url:")
         .set("title", ":title:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(page_id))
         .sql()?
         .bind_name(&"site_id", site_id)
-        .bind_name(&"parent_id", parent_id)
+        .bind_name(&"parent_id", parent_page_id)
         .bind_name(&"url", url)
         .bind_name(&"title", title);
 

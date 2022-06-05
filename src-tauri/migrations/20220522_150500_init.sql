@@ -24,7 +24,7 @@ CREATE TABLE site_queries (
 CREATE TABLE pages (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "site_id" INTEGER NOT NULL,
-  "parent_id" INTEGER,
+  "parent_page_id" INTEGER,
   "url" TEXT NOT NULL,
   "title" TEXT,
   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
