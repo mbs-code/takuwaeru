@@ -1,10 +1,28 @@
 <template>
   <div>
     <div>
-      <Button class="m-1" label="Edit" @click="showEditModal = true" />
+      <Button
+        class="m-1 p-button-success"
+        label="Edit"
+        @click="showEditModal = true"
+      />
 
-      <Button class="m-1" label="Reset" @click="onReset" />
+      <Button
+        class="m-1 p-button-danger"
+        label="Reset"
+        @click="onReset"
+      />
+
+      <Button class="m-1" label="Peek" @click="onPeek" />
     </div>
+
+    <hr>
+
+    <div class="m-2">
+      {{ selectedQueue }}
+    </div>
+
+    <hr>
 
     <div class="m-2">
       {{ site }}
@@ -82,11 +100,34 @@ const fetchSite = async () => {
 
 /// ////////////////////////////////////////////////////////////
 
+const selectedQueue = ref<Queue>()
+
+const onPeek = async () => {
+  loading.value = true
+
+  try {
+    // 先頭のキューを取り出す
+    const queues = await queueAPI.list({
+      siteId: siteId.value,
+      page: 1,
+      perPage: 1,
+      order: 'priority',
+      desc: true,
+    })
+    selectedQueue.value = queues.at(0)
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+  } finally {
+    loading.value = false
+  }
+}
+
 const onReset = async () => {
   loading.value = true
 
   try {
-  // ページ（とキュー）全てを削除する
+    // ページ（とキュー）全てを削除する
+    selectedQueue.value = null
     await pageAPI.clear(site.value.id)
 
     // タイトルを作成する
