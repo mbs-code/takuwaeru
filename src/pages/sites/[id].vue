@@ -184,7 +184,7 @@ const onExecute = async () => {
           }
         })()
         break
-      case 'image':
+      case 'download':
         await (async () => {
           // URL を全て抜き出す
           const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)

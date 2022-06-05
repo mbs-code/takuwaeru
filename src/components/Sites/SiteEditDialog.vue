@@ -219,7 +219,7 @@ const _show = computed({
 
 const processotTypes = ref<{ name: string, value: ProcessorType }[]>([
   { name: 'リンク抽出', value: 'extract' },
-  { name: '画像DL', value: 'image' },
+  { name: 'ダウンロード', value: 'download' },
 ])
 
 const isEdit = computed(() => props.site?.id > 0)

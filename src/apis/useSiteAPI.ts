@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri'
 
-export type ProcessorType = 'extract' | 'image'
+export type ProcessorType = 'extract' | 'download'
 
 export type SiteQuery = {
   id: number
