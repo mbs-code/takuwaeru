@@ -3,10 +3,7 @@ use std::error::Error;
 use rusqlite::Connection;
 use sql_builder::{bind::Bind, quote, SqlBuilder};
 
-use crate::{
-    db::chrono_now,
-    model::{Page, Queue},
-};
+use crate::{db::chrono_now, model::Queue};
 
 pub fn list_count(conn: &Connection, site_id: &Option<i64>) -> Result<i64, Box<dyn Error>> {
     let mut builder = SqlBuilder::select_from("queues");
@@ -49,6 +46,8 @@ pub fn list(
     if let Some(v_offset) = offset {
         builder.offset(v_offset);
     }
+
+    builder.order_by("id", false);
     let sql = builder.field("*").sql()?;
 
     #[cfg(debug_assertions)]

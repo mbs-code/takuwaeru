@@ -33,6 +33,8 @@ pub fn list(
     if let Some(v_offset) = offset {
         builder.offset(v_offset);
     }
+
+    builder.order_by("id", false);
     let sql = builder.field("*").sql()?;
 
     #[cfg(debug_assertions)]

@@ -12,6 +12,7 @@ pub fn list_count(conn: &Connection, site_id: &Option<i64>) -> Result<i64, Box<d
         builder.and_where("site_id = ?".bind(&v_site_id));
     }
 
+    builder.order_by("id", false);
     let sql = builder.count("*").sql()?;
 
     #[cfg(debug_assertions)]
