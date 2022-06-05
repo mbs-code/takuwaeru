@@ -28,6 +28,9 @@
         "removeFile": true,
         "renameFile": true,
         "scope": ["*"]
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {

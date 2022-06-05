@@ -1,5 +1,7 @@
 use std::error::Error;
 
+use string_error::new_err;
+
 use crate::{
     api,
     db::get_conn,
@@ -74,7 +76,7 @@ pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPage, Stri
         // 存在チェックを行う
         let page_count = api::page::list_count(&conn, &Some(site_id), &Some(param.url.clone()))?;
         if page_count > 0 {
-            panic!("This URL already exists");
+            Err(new_err("This URL already exists"))?
         }
 
         // 親IDがあるなら取得する
