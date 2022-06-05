@@ -24,7 +24,7 @@
       <div class="col-12 md:col-4">
         <div class="flex-column grid">
           <div class="col">
-            <label>識別記号* (英数字)</label>
+            <label>キー*</label>
             <InputText
               v-model="form.key"
               autofocus
@@ -64,7 +64,7 @@
             <div class="flex-column grid m-0 simple-border">
               <div class="col">
                 <div class="align-items-center flex">
-                  <label class="w-6rem">識別記号*</label>
+                  <label class="w-8rem">キー*</label>
                   <div class="align-items-center flex w-full">
                     <InputText
                       v-model="query.key"
@@ -85,7 +85,7 @@
 
               <div class="col">
                 <div class="align-items-center flex">
-                  <label class="w-6rem">対象URL*</label>
+                  <label class="w-8rem">対象URL*</label>
                   <InputTextRegex
                     v-model="query.url_pattern"
                     :disabled="loading"
@@ -95,7 +95,7 @@
 
               <div class="col">
                 <div class="align-items-center flex">
-                  <label class="w-6rem">モード*</label>
+                  <label class="w-8rem">モード*</label>
                   <SelectButton
                     v-model="query.processor"
                     class="w-full"
@@ -108,7 +108,7 @@
 
               <div class="col">
                 <div class="align-items-center flex">
-                  <label class="w-6rem">抽出URL*</label>
+                  <label class="w-8rem">抽出URL*</label>
                   <InputTextRegex
                     v-model="query.url_filter"
                     :disabled="loading"
@@ -118,7 +118,7 @@
 
               <div class="col">
                 <div class="align-items-center flex">
-                  <label class="w-6rem">優先度*</label>
+                  <label class="w-8rem">キュー優先度*</label>
 
                   <InputNumber
                     v-model="query.priority"
