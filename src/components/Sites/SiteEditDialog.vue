@@ -54,93 +54,101 @@
       </div>
 
       <div class="col-12 md:col-8">
-        <label>クエリ （{{ form.site_queries.length }}）</label>
         <div class="flex-column grid">
-          <div
-            v-for="(query, _) in form.site_queries"
-            :key="_"
-            class="col"
-          >
-            <div class="flex-column grid m-0 simple-border">
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">キー*</label>
-                  <div class="align-items-center flex w-full">
-                    <InputText
-                      v-model="query.key"
-                      class="block w-full"
-                      :disabled="loading"
-                    />
+          <div class="col w-full">
+            <label>クエリ （{{ form.site_queries.length }}）</label>
+            <TabView
+              v-model:active-index="queryTabIndex"
+              class="p-1 simple-border"
+              scrollable
+            >
+              <TabPanel
+                v-for="(query, _) in form.site_queries"
+                :key="_"
+                :header="`${_ + 1}: ${query.key || 'new'}`"
+              >
+                <div class="flex-column grid">
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">キー*</label>
+                      <div class="align-items-center flex w-full">
+                        <InputText
+                          v-model="query.key"
+                          class="block w-full"
+                          :disabled="loading"
+                        />
 
-                    <Button
-                      class="ml-2 p-button-danger p-button-rounded p-button-text"
-                      :disabled="loading"
-                      icon="pi pi-minus-circle"
-                      type="button"
-                      @click="removeSiteQuery(_)"
-                    />
+                        <Button
+                          class="ml-2 p-button-danger p-button-rounded p-button-text"
+                          :disabled="loading"
+                          icon="pi pi-minus-circle"
+                          type="button"
+                          @click="removeSiteQuery(_)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">対象URL*</label>
+                      <InputTextRegex
+                        v-model="query.url_pattern"
+                        :disabled="loading"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">モード*</label>
+                      <SelectButton
+                        v-model="query.processor"
+                        class="w-full"
+                        option-label="name"
+                        option-value="value"
+                        :options="processotTypes"
+                      />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">対象DOM</label>
+                      <InputText
+                        v-model="query.dom_selector"
+                        class="block w-full"
+                        :disabled="loading"
+                        placeholder="[href],[src]"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">抽出URL*</label>
+                      <InputTextRegex
+                        v-model="query.url_filter"
+                        :disabled="loading"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">キュー優先度*</label>
+
+                      <InputNumber
+                        v-model="query.priority"
+                        class="w-full"
+                        mode="decimal"
+                        show-buttons
+                        :step="10"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">対象URL*</label>
-                  <InputTextRegex
-                    v-model="query.url_pattern"
-                    :disabled="loading"
-                  />
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">モード*</label>
-                  <SelectButton
-                    v-model="query.processor"
-                    class="w-full"
-                    option-label="name"
-                    option-value="value"
-                    :options="processotTypes"
-                  />
-                </div>
-              </div>
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">対象DOM</label>
-                  <InputText
-                    v-model="query.dom_selector"
-                    class="block w-full"
-                    :disabled="loading"
-                    placeholder="[href],[src]"
-                  />
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">抽出URL*</label>
-                  <InputTextRegex
-                    v-model="query.url_filter"
-                    :disabled="loading"
-                  />
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="align-items-center flex">
-                  <label class="w-8rem">キュー優先度*</label>
-
-                  <InputNumber
-                    v-model="query.priority"
-                    class="w-full"
-                    mode="decimal"
-                    show-buttons
-                    :step="10"
-                  />
-                </div>
-              </div>
-            </div>
+              </TabPanel>
+            </TabView>
           </div>
 
           <div class="col">
@@ -234,6 +242,8 @@ const form = reactive<FormSite>({
 
 watch(_show, () => onReset())
 
+const queryTabIndex = ref<number>(0)
+
 const addSiteQuery = () => {
   form.site_queries.push({
     key: '',
@@ -247,6 +257,7 @@ const addSiteQuery = () => {
 
 const removeSiteQuery = (id: number) => {
   form.site_queries.splice(id, 1)
+  queryTabIndex.value = 0
 }
 
 /// //////////////////////////////////////////////////
@@ -264,6 +275,8 @@ const onReset = () => {
     url_filter: query.url_filter ?? '',
     priority: query.priority ?? 0,
   })) ?? []
+
+  queryTabIndex.value = 0
 }
 
 const onSubmit = async () => {

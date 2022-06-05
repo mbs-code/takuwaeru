@@ -16,6 +16,8 @@ import Card from 'primevue/card'
 import SelectButton from 'primevue/selectbutton'
 import Textarea from 'primevue/textarea'
 import InputNumber from 'primevue/inputnumber'
+import TabView from 'primevue/tabview'
+import TabPanel from 'primevue/tabpanel'
 
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -40,4 +42,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('SelectButton', SelectButton)
   nuxtApp.vueApp.component('Textarea', Textarea)
   nuxtApp.vueApp.component('InputNumber', InputNumber)
+  nuxtApp.vueApp.component('TabView', TabView)
+  nuxtApp.vueApp.component('TabPanel', TabPanel)
 })
