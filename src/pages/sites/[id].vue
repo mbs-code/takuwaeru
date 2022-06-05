@@ -12,9 +12,6 @@
         label="Reset"
         @click="onReset"
       />
-
-      <Button class="m-1" label="Peek" @click="onPeek" />
-
       <Button class="m-1" label="Execute" @click="onExecute" />
     </div>
 
@@ -109,28 +106,6 @@ const fetchSite = async () => {
 
 /// ////////////////////////////////////////////////////////////
 
-const selectedQueue = ref<Queue>()
-
-const onPeek = async () => {
-  loading.value = true
-
-  try {
-    // 先頭のキューを取り出す
-    const queues = await queueAPI.list({
-      siteId: siteId.value,
-      page: 1,
-      perPage: 1,
-      order: 'priority',
-      desc: true,
-    })
-    selectedQueue.value = queues.at(0)
-  } catch (err) {
-    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
-  } finally {
-    loading.value = false
-  }
-}
-
 const onReset = async () => {
   loading.value = true
 
@@ -156,13 +131,25 @@ const onReset = async () => {
 
 /// ////////////////////////////////////////////////////////////
 
+const selectedQueue = ref<Queue>()
+
 const onExecute = async () => {
-  // peek したキューを取り出す // TODO:
-  const queue = selectedQueue.value
-  if (!queue) { throw new Error('Peeked value is empty') }
-  const page = queue.page
+  // peek する
+  const queues = await queueAPI.list({
+    siteId: siteId.value,
+    page: 1,
+    perPage: 1,
+    order: 'priority',
+    desc: true,
+  })
+  const queue = queues.at(0)
+  selectedQueue.value = queue
+
+  // peek が空なら終了
+  if (!selectedQueue.value) { throw new Error('Peeked value is empty') }
 
   // http を叩いて取ってくる
+  const page = selectedQueue.value.page
   const data = await fetch(page.url, {
     method: 'GET',
     responseType: ResponseType.Text,
@@ -215,7 +202,6 @@ const onExecute = async () => {
 
   // キューからページを削除する
   await queueAPI.remove(queue.id)
-  selectedQueue.value = null
 
   // 更新
   await fetchSite()
