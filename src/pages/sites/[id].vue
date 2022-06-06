@@ -3,6 +3,7 @@
     <div class="grid m-0">
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
+        queue: {{ queueCount }}
       </div>
 
       <div class="col-12 md:col-6">
@@ -29,7 +30,7 @@
 
     <div class="m-2">
       <div>選択中：</div>
-      {{ selectedQueue }}
+      {{ walker.selectedQueue }}
     </div>
 
     <hr>
@@ -59,17 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import { fetch, ResponseType } from '@tauri-apps/api/http'
-import { createDir, writeBinaryFile } from '@tauri-apps/api/fs'
-import { join as pathJoin } from '@tauri-apps/api/path'
-import { load as cheerioLoad } from 'cheerio'
-import sanitize from 'sanitize-filename'
 import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
 import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
-import ParseUtil from '~~/src/utils/ParseUtil'
 
 const route = useRoute()
 const router = useRouter()
@@ -81,11 +76,15 @@ const siteAPI = useSiteAPI()
 const pageAPI = usePageAPI()
 const queueAPI = useQueueAPI()
 
+const walker = useWalker(processLogger, pageAPI, queueAPI)
+
 /// ////////////////////////////////////////////////////////////
 
 const site = ref<Site>()
 const pages = ref<Page[]>()
 const queues = ref<Queue[]>()
+
+const queueCount = ref<number>(0)
 
 const siteId = ref<number>()
 const loading = ref<boolean>(false)
@@ -113,6 +112,8 @@ const fetchSite = async () => {
       order: 'priority',
       desc: true,
     })
+
+    queueCount.value = await queueAPI.count(siteId.value)
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
@@ -121,23 +122,17 @@ const fetchSite = async () => {
 }
 
 /// ////////////////////////////////////////////////////////////
+
+const onRefresh = async () => {
+  await fetchSite()
+}
 
 const onReset = async () => {
   loading.value = true
 
   try {
-    // ページ（とキュー）全てを削除する
-    selectedQueue.value = null
-    await pageAPI.clear(site.value.id)
-
-    // ページを作成して、キューに追加する
-    await queueAPI.add(site.value.id, {
-      url: site.value.url,
-      priority: 0,
-    })
-
-    // 更新
-    await fetchSite()
+    walker.reset(site.value)
+    await onRefresh()
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
@@ -145,133 +140,17 @@ const onReset = async () => {
   }
 }
 
-/// ////////////////////////////////////////////////////////////
-
-const selectedQueue = ref<Queue>()
-
 const onExecute = async () => {
-  processLogger.event('Execute')
+  loading.value = true
 
-  // peek する
-  const queues = await queueAPI.list({
-    siteId: siteId.value,
-    page: 1,
-    perPage: 1,
-    order: 'priority',
-    desc: true,
-  })
-  const queue = queues.at(0)
-  selectedQueue.value = queue
-
-  // peek が空なら終了
-  if (!selectedQueue.value) { throw new Error('Peeked value is empty') }
-
-  // ページを取り出す
-  const page = selectedQueue.value.page
-  processLogger.info(`Select > [${queue.page.id}] ${queue.page.url}`)
-
-  // http を叩いて取ってくる
-  const data = await fetch(page.url, {
-    method: 'GET',
-    responseType: ResponseType.Text,
-  })
-
-  // dom変換する
-  const body = data.data as string
-  const $ = cheerioLoad(body)
-
-  // タイトルを取得する
-  const title = $('title').text()
-  page.title = title
-  processLogger.info(`Title > ${title}`)
-
-  // クエリを実行する
-  const queries = site.value.site_queries
-  for (const query of queries) {
-    // パターンと一致しているか
-    const pattern = new RegExp(query.url_pattern)
-    if (!pattern.test(page.url)) { continue }
-
-    // モードによって抽出する
-    switch (query.processor) {
-      case 'extract':
-        await (async () => {
-          // URL を全て抜き出す
-          const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
-
-          // キューに追加する（失敗する可能性あり）
-          for (const link of links) {
-            // TODO: 失敗したら false
-            await queueAPI.add(site.value.id, {
-              url: link,
-              priority: query.priority,
-              parent_page_id: page.id,
-            })
-          }
-        })()
-        break
-      case 'download':
-        await (async () => {
-          // 親を取り出す // TODO:
-          // const parentPage = await pageAPI.get(page.parent_page_id)
-
-          // URL を全て抜き出す
-          const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
-
-          // 画像を保存する
-          for (const link of links) {
-            // 画像を取得する
-            const blobRes = await fetch(link, {
-              method: 'GET',
-              responseType: ResponseType.Binary,
-              headers: {
-                Referer: page.url
-              }
-            })
-
-            // ファイル名を生成する
-            const u = new URL(link)
-            const pathname = u.pathname
-            const lastname = pathname.slice(Math.max(0, pathname.lastIndexOf('/') + 1))
-
-            // ディレクトリチェック
-            const dirPath = await pathJoin(
-              'temp',
-              sanitize(site.value.title || 'unknown'),
-              sanitize(page.title || 'unknown'),
-            )
-            await createDir(dirPath, { recursive: true })
-
-            // バイナリを保存する
-            const filePath = await pathJoin(
-              dirPath,
-              sanitize(lastname || new Date().getTime().toString()),
-            )
-            await writeBinaryFile({
-              path: filePath,
-              contents: blobRes.data as Iterable<number>
-            })
-          }
-        })()
-        break
-      default:
-        throw new Error(`Illegal process : ${query.processor}`)
-    }
+  try {
+    await walker.execute(site.value)
+    await onRefresh()
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+  } finally {
+    loading.value = false
   }
-
-  // ページを保存する
-  await pageAPI.update(page.id, {
-    site_id: page.site_id,
-    parent_page_id: page.parent_page_id,
-    url: page.url,
-    title: page.title,
-  })
-
-  // キューからページを削除する
-  await queueAPI.remove(queue.id)
-
-  // 更新
-  await fetchSite()
 }
 
 /// ////////////////////////////////////////////////////////////

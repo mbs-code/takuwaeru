@@ -23,4 +23,11 @@ export default class ParseUtil {
 
     return links
   }
+
+  public static urlLastName (url: string) {
+    const u = new URL(url)
+    const pathname = u.pathname
+    const lastname = pathname.slice(Math.max(0, pathname.lastIndexOf('/') + 1))
+    return lastname
+  }
 }
