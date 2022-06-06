@@ -1,5 +1,15 @@
 import { fetch, Response, ResponseType } from '@tauri-apps/api/http'
 import { load as cheerioLoad } from 'cheerio'
+import valvelet from 'valvelet'
+
+const INTERVAL = 1200 // TODO: 再調整、valvelet内部で再度delay関数を使ってゆらぎを出してもいいかも
+
+// throttle
+const limit = valvelet(
+  (callback: () => Promise<unknown>) => { return callback() },
+  1,
+  INTERVAL,
+)
 
 export default class HttpUtil {
   public static async fetchBody (
@@ -7,14 +17,13 @@ export default class HttpUtil {
     refererUrl?: string,
     onFetched?: (res: Response<string>) => void,
   ) {
-    // TODO: スロットル作成
-
     // http を叩いて取ってくる
-    const res = await fetch<string>(url, {
+    const res = (await limit(() => fetch(url, {
       method: 'GET',
       responseType: ResponseType.Text,
       headers: { Referer: refererUrl }
     })
+    )) as unknown as Response<string>
     if (onFetched) { onFetched(res) }
 
     // dom変換する
@@ -28,14 +37,13 @@ export default class HttpUtil {
     refererUrl?: string,
     onFetched?: (res: Response<Buffer>) => void,
   ) {
-    // TODO: スロットル作成
-
     // http を叩いて取ってくる
-    const res = await fetch<Buffer>(url, {
+    const res = (await limit(() => fetch(url, {
       method: 'GET',
       responseType: ResponseType.Binary,
       headers: { Referer: refererUrl }
     })
+    )) as unknown as Response<Buffer>
     if (onFetched) { onFetched(res) }
 
     // data 取得

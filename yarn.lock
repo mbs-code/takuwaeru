@@ -771,6 +771,11 @@
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.2.tgz#6286b4c7228d58ab7866d19716f3696e03a09397"
   integrity sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==
 
+"@types/valvelet@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/valvelet/-/valvelet-1.1.0.tgz#2a2a663e1269f91fe8c8e08ef12d4815c64aba69"
+  integrity sha512-3qG0O3YLmBg8RUDHVDWtCoXHTZI7EpHP4IPqzCXRXbQnm85aZ2Yaxre2/9kbQSqRuh81J+4BN+Q2wfb92Eu6Rg==
+
 "@typescript-eslint/eslint-plugin@^5.21.0", "@typescript-eslint/eslint-plugin@^5.25.0":
   version "5.25.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.25.0.tgz#e8ce050990e4d36cc200f2de71ca0d3eb5e77a31"
@@ -5623,6 +5628,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+valvelet@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/valvelet/-/valvelet-1.1.1.tgz#39bd66a732266d45c5918fbbcd3479db5602ad36"
+  integrity sha1-Ob1mpzImbUXFkY+7zTR521YCrTY=
 
 vite-node@^0.12.1:
   version "0.12.7"

@@ -17,11 +17,13 @@
     "primeicons": "^5.0.0",
     "primevue": "^3.12.6",
     "sanitize-filename": "^1.6.3",
+    "valvelet": "^1.1.1",
     "vue-window-size": "^1.1.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",
     "@tauri-apps/cli": "^1.0.0-rc.11",
+    "@types/valvelet": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "eslint": "^8.16.0",

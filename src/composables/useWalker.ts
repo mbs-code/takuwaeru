@@ -138,7 +138,7 @@ export const useWalker = (
       // 画像を取得する
     // TODO: reffer
       const blob = await HttpUtil.fetchBlob(page.url, undefined, (res: Response<Buffer>) => {
-        processLogger.info(`Fetch > ${res.data.toLocaleString()} byte`)
+        processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
 
       // ディレクトリチェック
