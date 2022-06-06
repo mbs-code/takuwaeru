@@ -2,6 +2,7 @@ import { createDir, writeBinaryFile } from '@tauri-apps/api/fs'
 import { join as pathJoin } from '@tauri-apps/api/path'
 import { CheerioAPI } from 'cheerio'
 import sanitize from 'sanitize-filename'
+import { Response } from '@tauri-apps/api/http'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
 import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
 import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
@@ -57,8 +58,8 @@ export const useWalker = (
 
     // http を叩いて取ってくる
     // TODO: reffer
-    const $ = await HttpUtil.fetchBody(page.url, undefined, (size: number) => {
-      processLogger.info(`Fetch > ${size.toLocaleString()} byte`)
+    const $ = await HttpUtil.fetchBody(page.url, undefined, (res: Response<string>) => {
+      processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
     })
 
     // タイトルを取得する
@@ -136,8 +137,8 @@ export const useWalker = (
     for (const link of links) {
       // 画像を取得する
     // TODO: reffer
-      const blob = await HttpUtil.fetchBlob(page.url, undefined, (size: number) => {
-        processLogger.info(`Fetch > ${size.toLocaleString()} byte`)
+      const blob = await HttpUtil.fetchBlob(page.url, undefined, (res: Response<Buffer>) => {
+        processLogger.info(`Fetch > ${res.data.toLocaleString()} byte`)
       })
 
       // ディレクトリチェック
