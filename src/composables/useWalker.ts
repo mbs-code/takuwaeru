@@ -16,6 +16,7 @@ export const useWalker = (
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
   const selectedQueue = ref<Queue>()
+  const execQuery = ref<SiteQuery>()
   const nowTask = ref<number>(0)
   const maxTask = ref<number>(0)
 
@@ -49,6 +50,10 @@ export const useWalker = (
 
   const execute = async (site: Site) => {
     processLogger.event('Execute')
+    selectedQueue.value = null
+    execQuery.value = null
+    nowTask.value = 0
+    maxTask.value = 1
 
     // peek する
     const queue = await peek(site)
@@ -94,6 +99,7 @@ export const useWalker = (
       if (!pattern.test(page.url)) { continue }
 
       // モード別に処理する
+      execQuery.value = query
       processLogger.info(`Query > ${query.key}`)
       switch (query.processor) {
         case 'extract':
@@ -183,6 +189,7 @@ export const useWalker = (
 
   return {
     selectedQueue,
+    execQuery,
     nowTask,
     maxTask,
 

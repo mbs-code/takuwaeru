@@ -4,11 +4,13 @@
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
         queue: {{ queueCount }}
-        <ProgressBar :value="perTask" />
       </div>
 
       <div class="col-12 md:col-6">
         <SiteLogPanel :logs="processLogger.logs.value" />
+
+        <div class="h-1rem" />
+        <SiteControlPanel :site="site" :walker="walker" />
       </div>
     </div>
 
