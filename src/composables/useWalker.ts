@@ -16,6 +16,8 @@ export const useWalker = (
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
   const selectedQueue = ref<Queue>()
+  const nowTask = ref<number>(0)
+  const maxTask = ref<number>(0)
 
   const peek = async (site: Site) => {
     const queues = await queueAPI.list({
@@ -107,6 +109,9 @@ export const useWalker = (
   }
 
   const handleExtract = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
+    nowTask.value = 0
+    maxTask.value = 1
+
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
     processLogger.debug(`Extract > ${links.length} links`)
@@ -122,22 +127,28 @@ export const useWalker = (
       if (res === false) { alreadyCount++ }
     }
 
+    nowTask.value = 1
+
     processLogger.debug(`Enque > ${links.length - alreadyCount} links (already: ${alreadyCount})`)
   }
 
   const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
+    nowTask.value = 0
+    maxTask.value = 1
+
     // 親を取り出す // TODO:
     // const parentPage = await pageAPI.get(page.parent_page_id)
 
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
+    maxTask.value = links.length
     processLogger.debug(`Extract > ${links.length} links`)
 
     // 画像を保存する
     for (const link of links) {
       // 画像を取得する
     // TODO: reffer
-      const blob = await HttpUtil.fetchBlob(page.url, undefined, (res: Response<Buffer>) => {
+      const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<Buffer>) => {
         processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
 
@@ -162,6 +173,7 @@ export const useWalker = (
         path: filePath,
         contents: blob,
       })
+      nowTask.value++
     }
 
     // TODO: 画像重複チェック
@@ -171,6 +183,8 @@ export const useWalker = (
 
   return {
     selectedQueue,
+    nowTask,
+    maxTask,
 
     peek,
     reset,

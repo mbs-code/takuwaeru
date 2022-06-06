@@ -19,6 +19,7 @@ import InputNumber from 'primevue/inputnumber'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
 import Tag from 'primevue/tag'
+import ProgressBar from 'primevue/progressbar'
 
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -46,4 +47,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('TabView', TabView)
   nuxtApp.vueApp.component('TabPanel', TabPanel)
   nuxtApp.vueApp.component('Tag', Tag)
+  nuxtApp.vueApp.component('ProgressBar', ProgressBar)
 })

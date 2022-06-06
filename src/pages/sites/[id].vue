@@ -4,6 +4,7 @@
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
         queue: {{ queueCount }}
+        <ProgressBar :value="perTask" />
       </div>
 
       <div class="col-12 md:col-6">
@@ -77,6 +78,9 @@ const pageAPI = usePageAPI()
 const queueAPI = useQueueAPI()
 
 const walker = useWalker(processLogger, pageAPI, queueAPI)
+const perTask = computed(() =>
+  parseFloat((walker.nowTask.value / walker.maxTask.value * 100).toFixed(1))
+)
 
 /// ////////////////////////////////////////////////////////////
 
