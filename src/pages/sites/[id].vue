@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="grid m-0">
+      <div class="col-12 md:col-6">
+        <SiteInfoPanel :site="site" />
+      </div>
+    </div>
+
     <div>
       <Button
         class="m-1 p-button-success"
