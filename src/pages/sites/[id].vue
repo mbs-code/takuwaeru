@@ -4,6 +4,10 @@
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
       </div>
+
+      <div class="col-12 md:col-6">
+        <SiteLogPanel :logs="processLogger.logs.value" />
+      </div>
     </div>
 
     <div>
@@ -64,11 +68,14 @@ import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
 import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
+import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 import ParseUtil from '~~/src/utils/ParseUtil'
 
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
+
+const processLogger = useProcessLogger()
 
 const siteAPI = useSiteAPI()
 const pageAPI = usePageAPI()
@@ -143,6 +150,8 @@ const onReset = async () => {
 const selectedQueue = ref<Queue>()
 
 const onExecute = async () => {
+  processLogger.event('Execute')
+
   // peek する
   const queues = await queueAPI.list({
     siteId: siteId.value,
@@ -157,8 +166,11 @@ const onExecute = async () => {
   // peek が空なら終了
   if (!selectedQueue.value) { throw new Error('Peeked value is empty') }
 
-  // http を叩いて取ってくる
+  // ページを取り出す
   const page = selectedQueue.value.page
+  processLogger.info(`Select > [${queue.page.id}] ${queue.page.url}`)
+
+  // http を叩いて取ってくる
   const data = await fetch(page.url, {
     method: 'GET',
     responseType: ResponseType.Text,
@@ -171,6 +183,7 @@ const onExecute = async () => {
   // タイトルを取得する
   const title = $('title').text()
   page.title = title
+  processLogger.info(`Title > ${title}`)
 
   // クエリを実行する
   const queries = site.value.site_queries
@@ -223,6 +236,7 @@ const onExecute = async () => {
 
             // ディレクトリチェック
             const dirPath = await pathJoin(
+              'temp',
               sanitize(site.value.title || 'unknown'),
               sanitize(page.title || 'unknown'),
             )

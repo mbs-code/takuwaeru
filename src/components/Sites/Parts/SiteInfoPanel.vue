@@ -1,5 +1,5 @@
 <template>
-  <Card v-if="site" class="p-0">
+  <Card v-if="site">
     <template #content>
       <Tag class="m-2" icon="pi pi-tag" :value="site.key" />
 
