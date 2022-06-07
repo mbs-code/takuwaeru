@@ -35,7 +35,7 @@ export default class HttpUtil {
   public static async fetchBlob (
     url: string,
     refererUrl?: string,
-    onFetched?: (res: Response<Buffer>) => void,
+    onFetched?: (res: Response<number[]>) => void,
   ) {
     // http を叩いて取ってくる
     const res = (await limit(() => fetch(url, {
@@ -43,7 +43,7 @@ export default class HttpUtil {
       responseType: ResponseType.Binary,
       headers: { Referer: refererUrl }
     })
-    )) as unknown as Response<Buffer>
+    )) as unknown as Response<number[]>
     if (onFetched) { onFetched(res) }
 
     // data 取得

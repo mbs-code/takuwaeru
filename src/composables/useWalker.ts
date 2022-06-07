@@ -12,15 +12,16 @@ import HttpUtil from '~~/src/utils/HttpUtil'
 
 export const useWalker = (
   processLogger: ReturnType<typeof useProcessLogger>,
+  processResult: ReturnType<typeof useProcessResult>,
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
   // TODO: 統計を別クラスに分ける
-  const selectedQueue = ref<Queue>()
-  const execQuery = ref<SiteQuery>()
-  const nowTask = ref<number>(0)
-  const maxTask = ref<number>(0)
-  const latestBlob = ref<Buffer>()
+  // const selectedQueue = ref<Queue>()
+  // const execQuery = ref<SiteQuery>()
+  // const nowTask = ref<number>(0)
+  // const maxTask = ref<number>(0)
+  // const latestBlob = ref<Buffer>()
 
   const peek = async (site: Site) => {
     const queues = await queueAPI.list({
@@ -39,8 +40,10 @@ export const useWalker = (
   }
 
   const reset = async (site: Site) => {
+    processLogger.event('Reset')
+    processResult.clear()
+
     // ページ（とキュー）全てを削除する
-    selectedQueue.value = null
     await pageAPI.clear(site.id)
 
     // ページを作成して、キューに追加する
@@ -52,17 +55,14 @@ export const useWalker = (
 
   const execute = async (site: Site) => {
     processLogger.event('Execute')
-    selectedQueue.value = null
-    execQuery.value = null
-    nowTask.value = 0
-    maxTask.value = 1
+    processResult.clear()
 
     // peek する
     const queue = await peek(site)
-    selectedQueue.value = queue
+    processResult.setQueue(queue)
 
     // ページを取り出す
-    const page = selectedQueue.value.page
+    const page = queue.page
     processLogger.info(`Deque > [${page.id}] ${page.url}`)
 
     // http を叩いて取ってくる
@@ -96,12 +96,16 @@ export const useWalker = (
 
   const handleQueries = async (queries: SiteQuery[], $: CheerioAPI, site: Site, page: Page) => {
     for (const query of queries) {
-      // パターンと一致しているか確認
+      processResult.setQueryStatus(query, 'exec')
+
+      // パターンと一致しているか確認（いなければ終了）
       const pattern = new RegExp(query.url_pattern)
-      if (!pattern.test(page.url)) { continue }
+      if (!pattern.test(page.url)) {
+        processResult.setQueryStatus(query, 'skip')
+        continue
+      }
 
       // モード別に処理する
-      execQuery.value = query
       processLogger.info(`Query > ${query.key}`)
       switch (query.processor) {
         case 'extract':
@@ -113,16 +117,16 @@ export const useWalker = (
         default:
           throw new Error(`Illegal process : ${query.processor}`)
       }
+
+      processResult.setQueryStatus(query, 'success')
     }
   }
 
   const handleExtract = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
-    nowTask.value = 0
-    maxTask.value = 1
-
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
     processLogger.debug(`Extract > ${links.length} links`)
+    processResult.setQueryTaskCnt(query, links.length)
 
     // キューに追加する（失敗する可能性あり）
     let alreadyCount = 0
@@ -133,33 +137,30 @@ export const useWalker = (
         parent_page_id: page.id,
       })
       if (res === false) { alreadyCount++ }
-    }
 
-    nowTask.value = 1
+      processResult.setQueryTaskIncrement(query)
+    }
 
     processLogger.debug(`Enque > ${links.length - alreadyCount} links (already: ${alreadyCount})`)
   }
 
   const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
-    nowTask.value = 0
-    maxTask.value = 1
-
     // 親を取り出す // TODO:
     // const parentPage = await pageAPI.get(page.parent_page_id)
 
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
-    maxTask.value = links.length
     processLogger.debug(`Extract > ${links.length} links`)
+    processResult.setQueryTaskCnt(query, links.length)
 
     // 画像を保存する
     for (const link of links) {
       // 画像を取得する
     // TODO: reffer
-      const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<Buffer>) => {
+      const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<number[]>) => {
         processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
-      latestBlob.value = blob
+      processResult.latestBlob.value = blob
 
       // ディレクトリチェック
       const dirPath = await pathJoin(
@@ -182,7 +183,8 @@ export const useWalker = (
         path: filePath,
         contents: blob,
       })
-      nowTask.value++
+
+      processResult.setQueryTaskIncrement(query)
     }
 
     // TODO: 画像重複チェック
@@ -191,12 +193,6 @@ export const useWalker = (
   }
 
   return {
-    selectedQueue,
-    execQuery,
-    nowTask,
-    maxTask,
-    latestBlob,
-
     peek,
     reset,
     execute,

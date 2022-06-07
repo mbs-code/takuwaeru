@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  blob: Buffer,
+  blob: number[],
 }>()
 
 const imageUrl = computed(() => 'data:image/jpg;base64,' + btoa(String.fromCharCode(...(props.blob || []))))

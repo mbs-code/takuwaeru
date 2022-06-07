@@ -1,17 +1,33 @@
 <template>
   <Card>
     <template #content>
-      <div>{{ walker.selectedQueue.value }}</div>
-      <div v-for="(item, _) of items" :key="_">
-        <div>
-          <span>{{ _ }}</span>
-          <span>{{ item.key }}</span>
-          <span>{{ item.processor }}</span>
-          <span>{{ item.result ? '○' : '→' }}</span>
-        </div>
+      <div>
+        <Button
+          class="m-1 p-button-success"
+          label="Edit"
+          @click="emit('onEdit')"
+        />
+
+        <Button
+          class="m-1 p-button-danger"
+          label="Reset"
+          @click="emit('onReset')"
+        />
+        <Button
+          class="m-1"
+          label="Execute"
+          @click="emit('onExecute')"
+        />
       </div>
 
-      <ProgressBar :value="perTask" />
+      <div>{{ processResult.selectedQueue }}</div>
+      <div v-for="(result, key) in processResult.queryResults.value" :key="key">
+        <span>{{ key }} {{ result.query.key }} {{ result.status }}</span>&nbsp;
+        <span>{{ result.task }} / {{ result.maxTask }}</span>
+        <div v-if="result.maxTask !== 0">
+          <ProgressBar :value="perTask(result.task, result.maxTask)" />
+        </div>
+      </div>
     </template>
   </Card>
 </template>
@@ -22,21 +38,16 @@ import { Site } from '~~/src/apis/useSiteAPI'
 const props = defineProps<{
   site: Site,
   walker: ReturnType<typeof useWalker>,
+  processResult: ReturnType<typeof useProcessResult>,
 }>()
 
-const items = computed(() => {
-  const queries = props.site?.site_queries || []
-  const nowIndex = queries.findIndex(query => query.id === props.walker.execQuery.value.id)
-  return queries.map((query, index) => {
-    return {
-      key: query.key,
-      processor: query.processor,
-      result: index < nowIndex,
-    }
-  })
-})
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (event: 'onEdit'): void,
+  (event: 'onReset'): void,
+  (event: 'onExecute'): void,
+}>()
 
-const perTask = computed(() =>
-  parseFloat((props.walker.nowTask.value / props.walker.maxTask.value * 100).toFixed(1))
-)
+const perTask = (num: number, deno: number) => parseFloat((num / deno * 100).toFixed(1))
+
 </script>

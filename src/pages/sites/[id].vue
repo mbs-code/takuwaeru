@@ -6,37 +6,29 @@
         queue: {{ queueCount }}
 
         <div class="h-1rem" />
-        <SiteImagePanel :blob="walker.latestBlob.value" />
+        <SiteImagePanel :blob="processResult.latestBlob.value" />
       </div>
 
       <div class="col-12 md:col-6">
-        <SiteLogPanel :logs="processLogger.logs.value" />
+        <SiteControlPanel
+          :process-result="processResult"
+          :site="site"
+          :walker="walker"
+          @onEdit="showEditModal = true"
+          @onExecute="onExecute"
+          @onReset="onReset"
+        />
 
         <div class="h-1rem" />
-        <SiteControlPanel :site="site" :walker="walker" />
+        <SiteLogPanel :logs="processLogger.logs.value" />
       </div>
-    </div>
-
-    <div>
-      <Button
-        class="m-1 p-button-success"
-        label="Edit"
-        @click="showEditModal = true"
-      />
-
-      <Button
-        class="m-1 p-button-danger"
-        label="Reset"
-        @click="onReset"
-      />
-      <Button class="m-1" label="Execute" @click="onExecute" />
     </div>
 
     <hr>
 
     <div class="m-2">
       <div>選択中：</div>
-      {{ walker.selectedQueue }}
+      {{ processResult.selectedQueue }}
     </div>
 
     <hr>
@@ -77,15 +69,13 @@ const router = useRouter()
 const toast = useToast()
 
 const processLogger = useProcessLogger()
+const processResult = useProcessResult()
 
 const siteAPI = useSiteAPI()
 const pageAPI = usePageAPI()
 const queueAPI = useQueueAPI()
 
-const walker = useWalker(processLogger, pageAPI, queueAPI)
-const perTask = computed(() =>
-  parseFloat((walker.nowTask.value / walker.maxTask.value * 100).toFixed(1))
-)
+const walker = useWalker(processLogger, processResult, pageAPI, queueAPI)
 
 /// ////////////////////////////////////////////////////////////
 
