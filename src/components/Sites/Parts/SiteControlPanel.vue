@@ -42,8 +42,15 @@
 
       <div>処理中：</div>
       <div v-if="queue">
-        <div>{{ queue.page.url }}</div>
-        <div>{{ queue.page.title ?? '-' }}</div>
+        <div class="align-items-center flex">
+          <span>{{ queue.page.url }}</span>
+          <Button
+            class="p-0 p-button-secondary p-button-text"
+            icon="pi pi-link"
+            @click="openBrowser(queue.page.url)"
+          />
+        </div>
+        <div>{{ queue.page.title || '-' }}</div>
       </div>
 
       <div v-for="(result, key) in processResult.queryResults.value" :key="key">
@@ -59,6 +66,8 @@
 </template>
 
 <script setup lang="ts">
+import { open } from '@tauri-apps/api/shell'
+
 const props = defineProps<{
   processResult: ReturnType<typeof useProcessResult>,
   queueCount: number,
@@ -75,7 +84,11 @@ const emit = defineEmits<{
 }>()
 
 const queue = computed(() => props.processResult.selectedQueue.value)
-
 const perTask = (num: number, deno: number) => parseFloat((num / deno * 100).toFixed(1))
 
+///
+
+const openBrowser = async (url: string) => {
+  await open(url)
+}
 </script>

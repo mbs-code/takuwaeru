@@ -24,11 +24,11 @@
 import { open } from '@tauri-apps/api/shell'
 import { Site } from '@/apis/useSiteAPI'
 
-const props = defineProps<{
+defineProps<{
   site: Site,
 }>()
 
-const openBrowser = async (url) => {
+const openBrowser = async (url: string) => {
   await open(url)
 }
 </script>
