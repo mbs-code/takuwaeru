@@ -4,7 +4,7 @@ import { CheerioAPI } from 'cheerio'
 import sanitize from 'sanitize-filename'
 import { Response } from '@tauri-apps/api/http'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
-import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
+import { useQueueAPI } from '~~/src/apis/useQueueAPI'
 import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 import ParseUtil from '~~/src/utils/ParseUtil'
@@ -16,13 +16,6 @@ export const useWalker = (
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
-  // TODO: 統計を別クラスに分ける
-  // const selectedQueue = ref<Queue>()
-  // const execQuery = ref<SiteQuery>()
-  // const nowTask = ref<number>(0)
-  // const maxTask = ref<number>(0)
-  // const latestBlob = ref<Buffer>()
-
   const peek = async (site: Site) => {
     const queues = await queueAPI.list({
       siteId: site.id,
@@ -41,7 +34,7 @@ export const useWalker = (
 
   const reset = async (site: Site) => {
     processLogger.event('Reset')
-    processResult.clear()
+    processResult.init(site)
 
     // ページ（とキュー）全てを削除する
     await pageAPI.clear(site.id)
@@ -55,7 +48,7 @@ export const useWalker = (
 
   const execute = async (site: Site) => {
     processLogger.event('Execute')
-    processResult.clear()
+    processResult.init(site)
 
     // peek する
     const queue = await peek(site)

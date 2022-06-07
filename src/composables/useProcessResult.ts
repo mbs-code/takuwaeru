@@ -1,5 +1,5 @@
 import { Queue } from '~~/src/apis/useQueueAPI'
-import { SiteQuery } from '~~/src/apis/useSiteAPI'
+import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
 
 type QueryStatus = 'wait' | 'exec' | 'success' | 'skip'
 
@@ -12,22 +12,21 @@ type QueryResult = {
 
 export const useProcessResult = () => {
   const selectedQueue = ref<Queue>()
+  const queryResults = ref<{ [key: string]: QueryResult }>({})
+
+  const init = (site: Site) => {
+    selectedQueue.value = null
+    queryResults.value = Object.fromEntries(site.site_queries.map((query: SiteQuery) =>
+      [query.id, { query, status: 'wait', task: 0, maxTask: 0 }]
+    ))
+  }
 
   const setQueue = (queue?: Queue) => {
     selectedQueue.value = queue
   }
 
-  ///
-
-  const queryResults = ref<{ [key: string]: QueryResult }>({})
-
   const setQueryStatus = (query: SiteQuery, status: QueryStatus) => {
-    queryResults.value[query.id] = {
-      query,
-      status,
-      task: 0,
-      maxTask: 0,
-    }
+    queryResults.value[query.id].status = status
   }
 
   const setQueryTaskCnt = (query: SiteQuery, taskCnt: number) => {
@@ -43,19 +42,12 @@ export const useProcessResult = () => {
 
   const latestBlob = ref<number[]>([])
 
-  ///
-
-  const clear = () => {
-    selectedQueue.value = null
-    queryResults.value = {}
-  }
-
   return {
     selectedQueue,
     queryResults,
     latestBlob,
 
-    clear,
+    init,
     setQueue,
     setQueryStatus,
     setQueryTaskCnt,

@@ -20,11 +20,19 @@
         />
       </div>
 
-      <div>{{ processResult.selectedQueue }}</div>
+      <div>残りキュー：{{ queueCount }}</div>
+
+      <div>処理中：</div>
+      <div v-if="queue">
+        <div>{{ queue.page.url }}</div>
+        <div>{{ queue.page.title ?? '-' }}</div>
+      </div>
+
       <div v-for="(result, key) in processResult.queryResults.value" :key="key">
         <span>{{ key }} {{ result.query.key }} {{ result.status }}</span>&nbsp;
         <span>{{ result.task }} / {{ result.maxTask }}</span>
-        <div v-if="result.maxTask !== 0">
+
+        <div v-if="result.status === 'exec' && result.maxTask !== 0">
           <ProgressBar :value="perTask(result.task, result.maxTask)" />
         </div>
       </div>
@@ -33,12 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { Site } from '~~/src/apis/useSiteAPI'
-
 const props = defineProps<{
-  site: Site,
-  walker: ReturnType<typeof useWalker>,
   processResult: ReturnType<typeof useProcessResult>,
+  queueCount: number,
 }>()
 
 // eslint-disable-next-line func-call-spacing
@@ -47,6 +52,8 @@ const emit = defineEmits<{
   (event: 'onReset'): void,
   (event: 'onExecute'): void,
 }>()
+
+const queue = computed(() => props.processResult.selectedQueue.value)
 
 const perTask = (num: number, deno: number) => parseFloat((num / deno * 100).toFixed(1))
 

@@ -3,7 +3,6 @@
     <div class="grid m-0">
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
-        queue: {{ queueCount }}
 
         <div class="h-1rem" />
         <SiteImagePanel :blob="processResult.latestBlob.value" />
@@ -12,8 +11,7 @@
       <div class="col-12 md:col-6">
         <SiteControlPanel
           :process-result="processResult"
-          :site="site"
-          :walker="walker"
+          :queue-count="queueCount"
           @onEdit="showEditModal = true"
           @onExecute="onExecute"
           @onReset="onReset"
@@ -24,12 +22,12 @@
       </div>
     </div>
 
-    <hr>
+    <!-- <hr>
 
     <div class="m-2">
       <div>選択中：</div>
       {{ processResult.selectedQueue }}
-    </div>
+    </div> -->
 
     <hr>
 
@@ -38,7 +36,7 @@
       {{ site }}
     </div>
 
-    <div class="m-2">
+    <!-- <div class="m-2">
       <div>ページ：</div>
       {{ pages }}
     </div>
@@ -46,7 +44,7 @@
     <div class="m-2">
       <div>キュー：</div>
       {{ queues }}
-    </div>
+    </div> -->
 
     <SiteEditDialog
       v-model:show="showEditModal"
@@ -80,8 +78,8 @@ const walker = useWalker(processLogger, processResult, pageAPI, queueAPI)
 /// ////////////////////////////////////////////////////////////
 
 const site = ref<Site>()
-const pages = ref<Page[]>()
-const queues = ref<Queue[]>()
+// const pages = ref<Page[]>()
+// const queues = ref<Queue[]>()
 
 const queueCount = ref<number>(0)
 
@@ -92,6 +90,8 @@ onMounted(async () => {
   const idStr = route.params.id as unknown as string
   siteId.value = parseInt(idStr)
   await fetchSite()
+
+  processResult.init(site.value)
 })
 
 const fetchSite = async () => {
@@ -99,18 +99,18 @@ const fetchSite = async () => {
 
   try {
     site.value = await siteAPI.get(siteId.value)
-    pages.value = await pageAPI.list({
-      siteId: siteId.value,
-      page: 1,
-      perPage: 100,
-    })
-    queues.value = await queueAPI.list({
-      siteId: siteId.value,
-      page: 1,
-      perPage: 100,
-      order: 'priority',
-      desc: true,
-    })
+    // pages.value = await pageAPI.list({
+    //   siteId: siteId.value,
+    //   page: 1,
+    //   perPage: 100,
+    // })
+    // queues.value = await queueAPI.list({
+    //   siteId: siteId.value,
+    //   page: 1,
+    //   perPage: 100,
+    //   order: 'priority',
+    //   desc: true,
+    // })
 
     queueCount.value = await queueAPI.count(siteId.value)
   } catch (err) {
