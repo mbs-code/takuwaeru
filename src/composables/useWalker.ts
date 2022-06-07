@@ -43,6 +43,7 @@ export const useWalker = (
     await queueAPI.add(site.id, {
       url: site.url,
       priority: 0,
+      is_persist: false,
     })
   }
 
@@ -57,6 +58,7 @@ export const useWalker = (
     await queueAPI.add(site.id, {
       url: site.url,
       priority: 0,
+      is_persist: false,
     })
   }
 
@@ -140,8 +142,9 @@ export const useWalker = (
     for (const link of links) {
       const res = await queueAPI.add(site.id, {
         url: link,
-        priority: query.priority,
         parent_page_id: page.id,
+        priority: query.priority,
+        is_persist: query.is_persist,
       })
       if (res === false) { alreadyCount++ }
 

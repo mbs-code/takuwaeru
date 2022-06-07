@@ -85,7 +85,14 @@ pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPageOrBool
         };
 
         // ページを作成する
-        let new_page_id = api::page::create(&conn, &site_id, &parent_page_id, &param.url, &None)?;
+        let new_page_id = api::page::create(
+            &conn,
+            &site_id,
+            &parent_page_id,
+            &param.url,
+            &None,
+            &param.is_persist,
+        )?;
 
         // キューに挿入する
         let new_queue_id = api::queue::create(&conn, &site_id, &new_page_id, &param.priority)?;

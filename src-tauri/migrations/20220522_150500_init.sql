@@ -30,6 +30,7 @@ CREATE TABLE pages (
   "parent_page_id" INTEGER,
   "url" TEXT NOT NULL,
   "title" TEXT,
+  "is_persist" INTEGER NOT NULL DEFAULT 0,
   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

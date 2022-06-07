@@ -11,6 +11,7 @@
       <div class="col-12 md:col-6">
         <SiteControlPanel
           :loading="loading"
+          :page-count="pageCount"
           :process-result="processResult"
           :queue-count="queueCount"
           @onClear="onClear"
@@ -18,19 +19,11 @@
           @onExecute="onExecute"
           @onReset="onReset"
         />
-        {{ pageCount }}
 
         <div class="h-1rem" />
         <SiteLogPanel :logs="processLogger.logs.value" />
       </div>
     </div>
-
-    <!-- <hr>
-
-    <div class="m-2">
-      <div>選択中：</div>
-      {{ processResult.selectedQueue }}
-    </div> -->
 
     <hr>
 
@@ -38,16 +31,6 @@
       <div>サイト：</div>
       {{ site }}
     </div>
-
-    <!-- <div class="m-2">
-      <div>ページ：</div>
-      {{ pages }}
-    </div>
-
-    <div class="m-2">
-      <div>キュー：</div>
-      {{ queues }}
-    </div> -->
 
     <SiteEditDialog
       v-model:show="showEditModal"

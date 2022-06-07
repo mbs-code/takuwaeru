@@ -94,6 +94,7 @@ pub fn create(
     parent_page_id: &Option<i64>,
     url: &String,
     title: &Option<String>,
+    is_persist: &bool,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::insert_into("pages")
@@ -101,6 +102,7 @@ pub fn create(
         .field("parent_page_id")
         .field("url")
         .field("title")
+        .field("is_persist")
         .field("created_at")
         .field("updated_at")
         .values(&[
@@ -108,6 +110,7 @@ pub fn create(
             ":parent_page_id:",
             ":url:",
             ":title:",
+            ":is_persist:",
             &quote(&now),
             &quote(&now),
         ])
@@ -115,7 +118,8 @@ pub fn create(
         .bind_name(&"site_id", site_id)
         .bind_name(&"parent_page_id", parent_page_id)
         .bind_name(&"url", url)
-        .bind_name(&"title", title);
+        .bind_name(&"title", title)
+        .bind_name(&"is_persist", is_persist);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
@@ -136,6 +140,7 @@ pub fn update(
     parent_page_id: &Option<i64>,
     url: &String,
     title: &Option<String>,
+    is_persist: &bool,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("pages")
@@ -143,13 +148,15 @@ pub fn update(
         .set("parent_page_id", ":parent_page_id:")
         .set("url", ":url:")
         .set("title", ":title:")
+        .set("is_persist", ":is_persist:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(page_id))
         .sql()?
         .bind_name(&"site_id", site_id)
         .bind_name(&"parent_page_id", parent_page_id)
         .bind_name(&"url", url)
-        .bind_name(&"title", title);
+        .bind_name(&"title", title)
+        .bind_name(&"is_persist", is_persist);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);

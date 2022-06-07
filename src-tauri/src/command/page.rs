@@ -73,6 +73,7 @@ pub fn page_update(page_id: i64, param: PageParam) -> Result<Page, String> {
             &param.parent_page_id,
             &param.url,
             &param.title,
+            &param.is_persist,
         )?;
 
         let new_page = api::page::get(&conn, &page_id)?;

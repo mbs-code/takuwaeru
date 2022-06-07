@@ -1,7 +1,16 @@
 <template>
   <Card>
     <template #content>
-      <div>
+      <div class="grid">
+        <Button
+          class="m-1"
+          :disabled="loading || queueCount === 0"
+          label="Execute"
+          @click="emit('onExecute')"
+        />
+
+        <div class="flex-grow-1" />
+
         <Button
           class="m-1 p-button-success"
           :disabled="loading"
@@ -15,21 +24,21 @@
           label="Clear"
           @click="emit('onClear')"
         />
+
         <Button
           class="m-1 p-button-danger"
           :disabled="loading"
           label="Reset"
           @click="emit('onReset')"
         />
-        <Button
-          class="m-1"
-          :disabled="loading"
-          label="Execute"
-          @click="emit('onExecute')"
-        />
+      </div>
+
+      <div v-show="queueCount === 0" class="text-red-500">
+        キューが空です。
       </div>
 
       <div>残りキュー：{{ queueCount }}</div>
+      <div>処理ページ：{{ pageCount }}</div>
 
       <div>処理中：</div>
       <div v-if="queue">
@@ -53,6 +62,7 @@
 const props = defineProps<{
   processResult: ReturnType<typeof useProcessResult>,
   queueCount: number,
+  pageCount: number,
   loading: boolean,
 }>()
 

@@ -117,6 +117,7 @@ pub struct Page {
     pub parent_page_id: Option<i64>,
     pub url: String,
     pub title: Option<String>,
+    pub is_persist: bool,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -128,8 +129,9 @@ impl Page {
             parent_page_id: row.get(2)?,
             url: row.get(3)?,
             title: row.get(4)?,
-            created_at: row.get(5)?,
-            updated_at: row.get(6)?,
+            is_persist: row.get(5)?,
+            created_at: row.get(6)?,
+            updated_at: row.get(7)?,
         })
     }
 }
@@ -142,6 +144,7 @@ pub struct PageParam {
     pub parent_page_id: Option<i64>,
     pub url: String,
     pub title: Option<String>,
+    pub is_persist: bool,
 }
 
 /// ////////////////////////////////////////////////////////////
@@ -207,4 +210,5 @@ pub struct QueueParam {
     pub url: String,
     pub priority: i64,
     pub parent_page_id: Option<i64>,
+    pub is_persist: bool,
 }
