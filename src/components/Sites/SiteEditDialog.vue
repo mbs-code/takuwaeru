@@ -62,10 +62,11 @@
               class="p-1 simple-border"
               scrollable
             >
+              <!-- // TODO: タグの名前がうまく表記できない問題を修正する -->
               <TabPanel
                 v-for="(query, _) in form.site_queries"
                 :key="_"
-                :header="`${_ + 1}: ${query.key || 'new'}`"
+                :header="`${_ + 1}`"
               >
                 <div class="flex-column grid">
                   <div class="col">
