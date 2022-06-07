@@ -94,6 +94,7 @@ export const useWalker = (
       parent_page_id: page.parent_page_id,
       url: page.url,
       title: page.title,
+      is_persist: page.is_persist,
     })
 
     // キューからページを削除する

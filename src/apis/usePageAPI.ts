@@ -6,6 +6,7 @@ export type Page = {
   parent_page_id?: number
   url: string
   title ?: string
+  is_persist: boolean
   created_at: string
   updated_at: string
 }
@@ -13,18 +14,19 @@ export type Page = {
 ///
 
 export type FormPage = {
-  site_id: number,
-  parent_page_id?: number,
-  url: string,
-  title?: string,
+  site_id: number
+  parent_page_id?: number
+  url: string
+  title?: string
+  is_persist: boolean
 }
 
 export type SearchPage = {
-  siteId: number,
-  page: number,
-  perPage: number,
-  order?: string,
-  desc?: boolean,
+  siteId: number
+  page: number
+  perPage: number
+  order?: string
+  desc?: boolean
 }
 
 ///
