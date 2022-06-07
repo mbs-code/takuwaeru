@@ -5,8 +5,17 @@
         <Button
           class="m-1"
           :disabled="loading || queueCount === 0"
-          label="Execute"
+          :icon="loading ? 'pi pi-spin pi-spinner' : ''"
+          :label="loading ? '' : 'Execute'"
           @click="emit('onExecute')"
+        />
+
+        <Button
+          v-if="loading"
+          class="m-1  p-button-danger  p-button-outlined"
+          :disabled="!loading"
+          label="Interrupt"
+          @click="emit('onInterrupt')"
         />
 
         <div class="flex-grow-1" />
@@ -79,6 +88,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'onEdit'): void,
   (event: 'onExecute'): void,
+  (event: 'onInterrupt'): void,
   (event: 'onClear'): void,
   (event: 'onReset'): void,
 }>()

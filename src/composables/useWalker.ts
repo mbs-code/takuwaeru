@@ -9,6 +9,7 @@ import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 import ParseUtil from '~~/src/utils/ParseUtil'
 import HttpUtil from '~~/src/utils/HttpUtil'
+import { InterruptError } from '~~/src/errors/InterruptError'
 
 export const useWalker = (
   processLogger: ReturnType<typeof useProcessLogger>,
@@ -16,6 +17,8 @@ export const useWalker = (
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
+  const interrupt = ref<boolean>(false)
+
   const peek = async (site: Site) => {
     const queues = await queueAPI.list({
       siteId: site.id,
@@ -63,6 +66,7 @@ export const useWalker = (
   }
 
   const execute = async (site: Site) => {
+    interrupt.value = false
     processLogger.event('Execute')
     processResult.init(site)
 
@@ -129,6 +133,7 @@ export const useWalker = (
       }
 
       processResult.setQueryStatus(query, 'success')
+      if (interrupt.value) { throw new InterruptError() }
     }
   }
 
@@ -150,6 +155,7 @@ export const useWalker = (
       if (res === false) { alreadyCount++ }
 
       processResult.setQueryTaskIncrement(query)
+      if (interrupt.value) { throw new InterruptError() }
     }
 
     processLogger.debug(`Enque > ${links.length - alreadyCount} links (already: ${alreadyCount})`)
@@ -196,6 +202,7 @@ export const useWalker = (
       })
 
       processResult.setQueryTaskIncrement(query)
+      if (interrupt.value) { throw new InterruptError() }
     }
 
     // TODO: 画像重複チェック
@@ -204,6 +211,8 @@ export const useWalker = (
   }
 
   return {
+    interrupt,
+
     peek,
     clear,
     reset,

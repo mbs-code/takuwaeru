@@ -17,6 +17,7 @@
           @onClear="onClear"
           @onEdit="showEditModal = true"
           @onExecute="onExecute"
+          @onInterrupt="onInterrupt"
           @onReset="onReset"
         />
 
@@ -132,6 +133,10 @@ const onExecute = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const onInterrupt = () => {
+  walker.interrupt.value = true
 }
 
 /// ////////////////////////////////////////////////////////////
