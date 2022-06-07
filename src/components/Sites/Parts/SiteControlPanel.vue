@@ -25,9 +25,9 @@ const props = defineProps<{
 }>()
 
 const items = computed(() => {
-  const queries = props.site.site_queries || []
+  const queries = props.site?.site_queries || []
   const nowIndex = queries.findIndex(query => query.id === props.walker.execQuery.value.id)
-  return (props.site.site_queries || []).map((query, index) => {
+  return queries.map((query, index) => {
     return {
       key: query.key,
       processor: query.processor,

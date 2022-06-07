@@ -15,10 +15,12 @@ export const useWalker = (
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
 ) => {
+  // TODO: 統計を別クラスに分ける
   const selectedQueue = ref<Queue>()
   const execQuery = ref<SiteQuery>()
   const nowTask = ref<number>(0)
   const maxTask = ref<number>(0)
+  const latestBlob = ref<Buffer>()
 
   const peek = async (site: Site) => {
     const queues = await queueAPI.list({
@@ -157,6 +159,7 @@ export const useWalker = (
       const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<Buffer>) => {
         processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
+      latestBlob.value = blob
 
       // ディレクトリチェック
       const dirPath = await pathJoin(
@@ -192,6 +195,7 @@ export const useWalker = (
     execQuery,
     nowTask,
     maxTask,
+    latestBlob,
 
     peek,
     reset,

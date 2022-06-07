@@ -4,6 +4,9 @@
       <div class="col-12 md:col-6">
         <SiteInfoPanel :site="site" />
         queue: {{ queueCount }}
+
+        <div class="h-1rem" />
+        <SiteImagePanel :blob="walker.latestBlob.value" />
       </div>
 
       <div class="col-12 md:col-6">
