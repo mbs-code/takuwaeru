@@ -10,6 +10,12 @@
         />
 
         <Button
+          class="m-1 p-button-warning"
+          :disabled="loading"
+          label="Clear"
+          @click="emit('onClear')"
+        />
+        <Button
           class="m-1 p-button-danger"
           :disabled="loading"
           label="Reset"
@@ -53,8 +59,9 @@ const props = defineProps<{
 // eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (event: 'onEdit'): void,
-  (event: 'onReset'): void,
   (event: 'onExecute'): void,
+  (event: 'onClear'): void,
+  (event: 'onReset'): void,
 }>()
 
 const queue = computed(() => props.processResult.selectedQueue.value)

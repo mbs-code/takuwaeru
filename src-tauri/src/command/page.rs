@@ -88,7 +88,7 @@ pub fn page_delete(page_id: i64) -> Result<i64, String> {
         let conn = get_conn()?.lock()?;
 
         let _ = api::queue::delete(&conn, &None, &Some(page_id), &None)?;
-        let _ = api::page::delete(&conn, &Some(page_id), &None)?;
+        let _ = api::page::delete(&conn, &Some(page_id), &None, &false)?;
 
         Ok(page_id)
     }();
@@ -99,12 +99,12 @@ pub fn page_delete(page_id: i64) -> Result<i64, String> {
 ///
 
 #[tauri::command]
-pub fn page_clear(site_id: i64) -> Result<(), String> {
+pub fn page_clear(site_id: i64, keep_persist: bool) -> Result<(), String> {
     let do_steps = || -> Result<(), Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
         let _ = api::queue::delete(&conn, &None, &None, &Some(site_id));
-        let _ = api::page::delete(&conn, &None, &Some(site_id))?;
+        let _ = api::page::delete(&conn, &None, &Some(site_id), &keep_persist)?;
 
         Ok(())
     }();

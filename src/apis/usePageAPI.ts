@@ -63,9 +63,9 @@ export const usePageAPI = () => {
     return result
   }
 
-  const clear = async (siteId: number) => {
+  const clear = async (siteId: number, keepPersist: boolean) => {
     const result: boolean = await invoke('page_clear', {
-      siteId,
+      siteId, keepPersist,
     })
     return result
   }

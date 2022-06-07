@@ -32,12 +32,26 @@ export const useWalker = (
     return queue
   }
 
+  const clear = async (site: Site) => {
+    processLogger.event('Clear')
+    processResult.init(site)
+
+    // 永続化したページ以外の、ページ（とキュー）全てを削除する
+    await pageAPI.clear(site.id, true)
+
+    // ページを作成して、キューに追加する
+    await queueAPI.add(site.id, {
+      url: site.url,
+      priority: 0,
+    })
+  }
+
   const reset = async (site: Site) => {
     processLogger.event('Reset')
     processResult.init(site)
 
     // ページ（とキュー）全てを削除する
-    await pageAPI.clear(site.id)
+    await pageAPI.clear(site.id, false)
 
     // ページを作成して、キューに追加する
     await queueAPI.add(site.id, {
@@ -187,6 +201,7 @@ export const useWalker = (
 
   return {
     peek,
+    clear,
     reset,
     execute,
   }

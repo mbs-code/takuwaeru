@@ -13,10 +13,12 @@
           :loading="loading"
           :process-result="processResult"
           :queue-count="queueCount"
+          @onClear="onClear"
           @onEdit="showEditModal = true"
           @onExecute="onExecute"
           @onReset="onReset"
         />
+        {{ pageCount }}
 
         <div class="h-1rem" />
         <SiteLogPanel :logs="processLogger.logs.value" />
@@ -80,6 +82,7 @@ const walker = useWalker(processLogger, processResult, pageAPI, queueAPI)
 
 const site = ref<Site>()
 const queueCount = ref<number>(0)
+const pageCount = ref<number>(0)
 
 const siteId = ref<number>()
 const loading = ref<boolean>(false)
@@ -97,7 +100,9 @@ const fetchSite = async () => {
 
   try {
     site.value = await siteAPI.get(siteId.value)
+
     queueCount.value = await queueAPI.count(siteId.value)
+    pageCount.value = await pageAPI.count(siteId.value)
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
@@ -106,6 +111,19 @@ const fetchSite = async () => {
 }
 
 /// ////////////////////////////////////////////////////////////
+
+const onClear = async () => {
+  loading.value = true
+
+  try {
+    walker.clear(site.value)
+    await fetchSite()
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+  } finally {
+    loading.value = false
+  }
+}
 
 const onReset = async () => {
   loading.value = true

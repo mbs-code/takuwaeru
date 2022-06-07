@@ -166,6 +166,7 @@ pub fn delete(
     conn: &Connection,
     page_id: &Option<i64>,
     site_id: &Option<i64>,
+    keep_persist: &bool,
 ) -> Result<(), Box<dyn Error>> {
     let mut builder = SqlBuilder::delete_from("pages");
 
@@ -174,6 +175,10 @@ pub fn delete(
     }
     if let Some(v_site_id) = site_id {
         builder.and_where("site_id = ?".bind(v_site_id));
+    }
+
+    if *keep_persist {
+        builder.and_where("is_persist <> ?".bind(&true));
     }
 
     let sql = builder.sql()?;
