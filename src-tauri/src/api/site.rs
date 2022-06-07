@@ -177,6 +177,9 @@ pub fn sync_site_queries(
                 &site_query.processor,
                 &site_query.dom_selector,
                 &site_query.url_filter,
+                &site_query.title_filter,
+                &site_query.nest_parent,
+                &site_query.is_persist,
                 &site_query.priority,
             )?;
         } else {
@@ -188,6 +191,9 @@ pub fn sync_site_queries(
                 &site_query.processor,
                 &site_query.dom_selector,
                 &site_query.url_filter,
+                &site_query.title_filter,
+                &site_query.nest_parent,
+                &site_query.is_persist,
                 &site_query.priority,
             )?;
         }

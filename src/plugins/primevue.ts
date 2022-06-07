@@ -21,6 +21,7 @@ import TabPanel from 'primevue/tabpanel'
 import Tag from 'primevue/tag'
 import ProgressBar from 'primevue/progressbar'
 import Image from 'primevue/image'
+import InputSwitch from 'primevue/inputswitch'
 
 import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
@@ -50,4 +51,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('Tag', Tag)
   nuxtApp.vueApp.component('ProgressBar', ProgressBar)
   nuxtApp.vueApp.component('Image', Image)
+  nuxtApp.vueApp.component('InputSwitch', InputSwitch)
 })

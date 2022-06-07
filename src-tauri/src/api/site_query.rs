@@ -71,6 +71,9 @@ pub fn create(
     processor: &String,
     dom_selector: &Option<String>,
     url_filter: &String,
+    title_filter: &Option<String>,
+    nest_parent: &i64,
+    is_persist: &bool,
     priority: &i64,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
@@ -81,6 +84,9 @@ pub fn create(
         .field("processor")
         .field("dom_selector")
         .field("url_filter")
+        .field("title_filter")
+        .field("nest_parent")
+        .field("is_persist")
         .field("priority")
         .field("created_at")
         .field("updated_at")
@@ -91,6 +97,9 @@ pub fn create(
             ":processor:",
             ":dom_selector:",
             ":url_filter:",
+            ":title_filter:",
+            ":nest_parent:",
+            ":is_persist:",
             ":priority:",
             &quote(&now),
             &quote(&now),
@@ -102,6 +111,9 @@ pub fn create(
         .bind_name(&"processor", processor)
         .bind_name(&"dom_selector", dom_selector)
         .bind_name(&"url_filter", url_filter)
+        .bind_name(&"title_filter", title_filter)
+        .bind_name(&"nest_parent", nest_parent)
+        .bind_name(&"is_persist", is_persist)
         .bind_name(&"priority", priority);
 
     #[cfg(debug_assertions)]
@@ -125,6 +137,9 @@ pub fn update(
     processor: &String,
     dom_selector: &Option<String>,
     url_filter: &String,
+    title_filter: &Option<String>,
+    nest_parent: &i64,
+    is_persist: &bool,
     priority: &i64,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
@@ -135,6 +150,9 @@ pub fn update(
         .set("processor", ":processor:")
         .set("dom_selector", ":dom_selector:")
         .set("url_filter", ":url_filter:")
+        .set("title_filter", ":title_filter:")
+        .set("nest_parent", ":nest_parent:")
+        .set("is_persist", ":is_persist:")
         .set("priority", ":priority:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_query_id))
@@ -145,6 +163,9 @@ pub fn update(
         .bind_name(&"processor", processor)
         .bind_name(&"dom_selector", dom_selector)
         .bind_name(&"url_filter", url_filter)
+        .bind_name(&"title_filter", title_filter)
+        .bind_name(&"nest_parent", nest_parent)
+        .bind_name(&"is_persist", is_persist)
         .bind_name(&"priority", priority);
 
     #[cfg(debug_assertions)]

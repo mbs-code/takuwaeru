@@ -135,7 +135,40 @@
 
                   <div class="col">
                     <div class="align-items-center flex">
-                      <label class="w-8rem">キュー優先度*</label>
+                      <label class="w-8rem">ﾀｲﾄﾙ除外*</label>
+                      <InputTextRegex
+                        v-model="query.title_filter"
+                        :disabled="loading"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">親遡り*</label>
+
+                      <InputNumber
+                        v-model="query.nest_parent"
+                        class="w-full"
+                        mode="decimal"
+                        show-buttons
+                        :step="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">永続化*</label>
+                      <div class="w-full">
+                        <InputSwitch v-model="query.is_persist" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="align-items-center flex">
+                      <label class="w-8rem">ｷｭｰ優先度*</label>
 
                       <InputNumber
                         v-model="query.priority"
@@ -251,6 +284,9 @@ const addSiteQuery = () => {
     processor: 'extract',
     dom_selector: '',
     url_filter: '',
+    title_filter: '',
+    nest_parent: 0,
+    is_persist: false,
     priority: 0,
   })
 }
@@ -273,6 +309,9 @@ const onReset = () => {
     processor: query.processor ?? 'extract',
     dom_selector: query.dom_selector ?? '',
     url_filter: query.url_filter ?? '',
+    title_filter: query.title_filter ?? '',
+    nest_parent: query.nest_parent ?? 0,
+    is_persist: query.is_persist ?? false,
     priority: query.priority ?? 0,
   })) ?? []
 
