@@ -4,17 +4,20 @@
       <div>
         <Button
           class="m-1 p-button-success"
+          :disabled="loading"
           label="Edit"
           @click="emit('onEdit')"
         />
 
         <Button
           class="m-1 p-button-danger"
+          :disabled="loading"
           label="Reset"
           @click="emit('onReset')"
         />
         <Button
           class="m-1"
+          :disabled="loading"
           label="Execute"
           @click="emit('onExecute')"
         />
@@ -44,6 +47,7 @@
 const props = defineProps<{
   processResult: ReturnType<typeof useProcessResult>,
   queueCount: number,
+  loading: boolean,
 }>()
 
 // eslint-disable-next-line func-call-spacing

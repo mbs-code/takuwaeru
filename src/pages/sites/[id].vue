@@ -10,6 +10,7 @@
 
       <div class="col-12 md:col-6">
         <SiteControlPanel
+          :loading="loading"
           :process-result="processResult"
           :queue-count="queueCount"
           @onEdit="showEditModal = true"
@@ -58,8 +59,8 @@
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
-import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
-import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
+import { usePageAPI } from '~~/src/apis/usePageAPI'
+import { useQueueAPI } from '~~/src/apis/useQueueAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 
 const route = useRoute()
@@ -78,9 +79,6 @@ const walker = useWalker(processLogger, processResult, pageAPI, queueAPI)
 /// ////////////////////////////////////////////////////////////
 
 const site = ref<Site>()
-// const pages = ref<Page[]>()
-// const queues = ref<Queue[]>()
-
 const queueCount = ref<number>(0)
 
 const siteId = ref<number>()
@@ -99,19 +97,6 @@ const fetchSite = async () => {
 
   try {
     site.value = await siteAPI.get(siteId.value)
-    // pages.value = await pageAPI.list({
-    //   siteId: siteId.value,
-    //   page: 1,
-    //   perPage: 100,
-    // })
-    // queues.value = await queueAPI.list({
-    //   siteId: siteId.value,
-    //   page: 1,
-    //   perPage: 100,
-    //   order: 'priority',
-    //   desc: true,
-    // })
-
     queueCount.value = await queueAPI.count(siteId.value)
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
@@ -122,16 +107,12 @@ const fetchSite = async () => {
 
 /// ////////////////////////////////////////////////////////////
 
-const onRefresh = async () => {
-  await fetchSite()
-}
-
 const onReset = async () => {
   loading.value = true
 
   try {
     walker.reset(site.value)
-    await onRefresh()
+    await fetchSite()
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
@@ -144,7 +125,7 @@ const onExecute = async () => {
 
   try {
     await walker.execute(site.value)
-    await onRefresh()
+    await fetchSite()
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
