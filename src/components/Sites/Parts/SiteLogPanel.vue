@@ -1,13 +1,13 @@
 <template>
   <Card>
     <template #content>
-      <div ref="scrollRef" class="h-10rem overflow-y-scroll">
+      <div ref="scrollRef" class="h-14rem overflow-y-scroll">
         <div
           v-for="(log, _) of items"
           :key="_"
           :class="log.color"
         >
-          <span class="inline-block w-3rem">
+          <span class="inline-block w-5rem">
             {{ log.dateStr }}
           </span>
           <span :class="log.color">{{ log.text }}</span>
@@ -37,14 +37,16 @@ const scrollRef = ref<HTMLDivElement>()
 watch(props.logs, () => {
   const ref = scrollRef.value
   if (ref) {
-    ref.scrollTo({ top: ref.scrollHeight + 100, behavior: 'smooth' })
+    nextTick(() => {
+      ref.scrollTo({ top: ref.scrollHeight + 200, behavior: 'smooth' })
+    })
   }
 })
 
 const items = computed(() => props.logs.map((log) => {
   return {
     ...log,
-    dateStr: format(log.date, 'HH:mm'),
+    dateStr: format(log.date, 'HH:mm:ss'),
     color: colorMap[log.type],
   }
 }))

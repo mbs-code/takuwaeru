@@ -102,8 +102,16 @@ const onClear = async () => {
   try {
     walker.clear(site.value)
     await fetchSite()
+
+    toast.add({
+      severity: 'success',
+      summary: 'キャッシュを削除しました。',
+      detail: `[${site.value.id}] ${site.value.key}: ${site.value.title}`,
+      life: 3000
+    })
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+    processLogger.error(err)
   } finally {
     loading.value = false
   }
@@ -115,8 +123,16 @@ const onReset = async () => {
   try {
     walker.reset(site.value)
     await fetchSite()
+
+    toast.add({
+      severity: 'success',
+      summary: '処理履歴を削除しました。',
+      detail: `[${site.value.id}] ${site.value.key}: ${site.value.title}`,
+      life: 3000
+    })
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+    processLogger.error(err)
   } finally {
     loading.value = false
   }
@@ -128,8 +144,16 @@ const onExecute = async () => {
   try {
     await walker.execute(site.value)
     await fetchSite()
+
+    toast.add({
+      severity: 'success',
+      summary: '実行完了',
+      detail: `[${site.value.id}] ${site.value.key}: ${site.value.title}`,
+      life: 3000
+    })
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
+    processLogger.error(err)
   } finally {
     loading.value = false
   }

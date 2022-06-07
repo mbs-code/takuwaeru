@@ -81,7 +81,7 @@ export const useWalker = (
     // http を叩いて取ってくる
     // TODO: reffer
     const $ = await HttpUtil.fetchBody(page.url, undefined, (res: Response<string>) => {
-      processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
+      processLogger.debug(`Fetch > ${res.data.length.toLocaleString()} byte`)
     })
 
     // タイトルを取得する
@@ -120,7 +120,7 @@ export const useWalker = (
       }
 
       // モード別に処理する
-      processLogger.info(`Query > ${query.key}`)
+      processLogger.info(`[Query] > ${query.key}`)
       switch (query.processor) {
         case 'extract':
           await handleExtract(query, $, site, page)
@@ -167,15 +167,18 @@ export const useWalker = (
 
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
-    processLogger.debug(`Extract > ${links.length} links`)
-    processResult.setQueryTaskCnt(query, links.length)
+    const linkCnt = links.length
+    processLogger.debug(`Extract > ${linkCnt} links`)
+    processResult.setQueryTaskCnt(query, linkCnt)
 
     // 画像を保存する
-    for (const link of links) {
+    for (const [i, link] of links.entries()) {
+      processLogger.info(`[${i + 1}/${linkCnt}] Link > ${link}`)
+
       // 画像を取得する
-    // TODO: reffer
+      // TODO: reffer
       const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<number[]>) => {
-        processLogger.info(`Fetch > ${res.data.length.toLocaleString()} byte`)
+        processLogger.debug(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
       processResult.latestBlob.value = blob
 
