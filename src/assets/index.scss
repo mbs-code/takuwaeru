@@ -1,7 +1,8 @@
 @import 'primeflex/primeflex.scss';
 
 body {
-  @include styleclass('m-0 overflow-y-hidden');
+  @include styleclass('m-0');
+  // @include styleclass('overflow-y-hidden');
 }
 
 .p-datatable-wrapper {
