@@ -20,6 +20,8 @@ rules:
   '@typescript-eslint/no-unused-vars': 'warn'
   # single word component の許可
   vue/multi-word-component-names: 'off'
+  # vue2 用設定の無効化
+  vue/no-v-for-template-key: 'off'
   # 複数ルートの許可
   vue/no-multiple-template-root: 'off'
   # 複数v-modelの許可

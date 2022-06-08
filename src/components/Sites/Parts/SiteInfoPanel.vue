@@ -7,7 +7,7 @@
 
           <div class="align-items-center flex">
             <i class="pi pi-angle-right pr-2 text-2xl" />
-            <span class="text-2xl">{{ site.title + 'asdasdasdasdasd' }}</span>
+            <span class="text-2xl">{{ site.title }}</span>
           </div>
 
           <div class="ml-5">
