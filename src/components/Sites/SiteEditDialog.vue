@@ -62,11 +62,10 @@
               class="p-1 simple-border"
               scrollable
             >
-              <!-- // TODO: タグの名前がうまく表記できない問題を修正する -->
               <TabPanel
                 v-for="(query, _) in form.site_queries"
                 :key="_"
-                :header="`${_ + 1}`"
+                :header="`${_ + 1}: ${queryTabNames[_] || 'new'}`"
               >
                 <div class="flex-column grid">
                   <div class="col">
@@ -77,6 +76,7 @@
                           v-model="query.key"
                           class="block w-full"
                           :disabled="loading"
+                          @change="updateQuerytabNames"
                         />
 
                         <Button
@@ -277,6 +277,11 @@ const form = reactive<FormSite>({
 watch(_show, () => onReset())
 
 const queryTabIndex = ref<number>(0)
+const queryTabNames = ref<string[]>()
+
+const updateQuerytabNames = () => {
+  queryTabNames.value = form.site_queries.map(query => query.key)
+}
 
 const addSiteQuery = () => {
   form.site_queries.push({
@@ -317,6 +322,7 @@ const onReset = () => {
   })) ?? []
 
   queryTabIndex.value = 0
+  updateQuerytabNames()
 }
 
 const onSubmit = async () => {
