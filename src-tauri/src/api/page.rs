@@ -20,7 +20,6 @@ pub fn list_count(
         builder.and_where("url = ?".bind(v_url));
     }
 
-    builder.order_by("id", false);
     let sql = builder.count("*").sql()?;
 
     #[cfg(debug_assertions)]

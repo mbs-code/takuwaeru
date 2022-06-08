@@ -175,6 +175,13 @@ export const useWalker = (
     for (const [i, link] of links.entries()) {
       processLogger.info(`[${i + 1}/${linkCnt}] Link > ${link}`)
 
+      // ページが存在するか確認する
+      const exist = await pageAPI.count(site.id, link)
+      if (exist) {
+        processLogger.error(`[${i + 1}/${linkCnt}] Already processed.`)
+        continue
+      }
+
       // 画像を取得する
       // TODO: reffer
       const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<number[]>) => {

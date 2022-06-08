@@ -32,9 +32,9 @@ export type SearchPage = {
 ///
 
 export const usePageAPI = () => {
-  const count = async (siteId: number) => {
+  const count = async (siteId: number, url?: string) => {
     const num: number = await invoke('page_count', {
-      siteId,
+      siteId, url,
     })
     return num
   }

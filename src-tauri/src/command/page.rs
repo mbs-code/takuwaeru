@@ -7,11 +7,11 @@ use crate::{
 };
 
 #[tauri::command]
-pub fn page_count(site_id: Option<i64>) -> Result<i64, String> {
+pub fn page_count(site_id: Option<i64>, url: Option<String>) -> Result<i64, String> {
     let do_steps = || -> Result<i64, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let count = api::page::list_count(&conn, &site_id, &None)?;
+        let count = api::page::list_count(&conn, &site_id, &url)?;
         Ok(count)
     }();
 
