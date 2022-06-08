@@ -4,21 +4,38 @@
       <div class="flex-column grid">
         <div class="col">
           <div class="flex">
-            <Button
-              class="mx-2"
-              :disabled="loading || queueCount === 0"
-              :icon="loading ? 'pi pi-spin pi-spinner' : 'pi pi-play'"
-              :label="loading ? '' : 'Run'"
-              @click="emit('onExecute')"
-            />
+            <template v-if="!loading">
+              <Button
+                class="mx-2"
+                :disabled="queueCount === 0"
+                icon="pi pi-play"
+                label="Once"
+                @click="emit('onExecute')"
+              />
 
-            <Button
-              v-if="loading && queue"
-              class="mx-2 p-button-danger"
-              :disabled="!loading"
-              icon="pi pi-pause"
-              @click="emit('onInterrupt')"
-            />
+              <Button
+                class="mx-2"
+                :disabled="queueCount === 0"
+                icon="pi pi-forward"
+                label="Run"
+                @click="emit('onExecuteLoop')"
+              />
+            </template>
+
+            <template v-if="loading && queue">
+              <Button
+                class="mx-2"
+                disabled
+                icon="pi pi-spin pi-spinner"
+              />
+
+              <Button
+                class="mx-2 p-button-danger"
+                :disabled="!loading"
+                icon="pi pi-pause"
+                @click="emit('onInterrupt')"
+              />
+            </template>
 
             <div class="flex-grow-1" />
 
@@ -128,6 +145,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'onEdit'): void,
   (event: 'onExecute'): void,
+  (event: 'onExecuteLoop'): void,
   (event: 'onInterrupt'): void,
   (event: 'onClear'): void,
   (event: 'onReset'): void,

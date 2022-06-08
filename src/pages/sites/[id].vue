@@ -17,7 +17,8 @@
           :queue-count="queueCount"
           :site="site"
           @onClear="onClear"
-          @onExecute="onExecute"
+          @onExecute="onExecute(false)"
+          @onExecuteLoop="onExecute(true)"
           @onInterrupt="onInterrupt"
           @onReset="onReset"
         />
@@ -77,14 +78,20 @@ onMounted(async () => {
   processResult.init(site.value)
 })
 
+///
+
+const fetchSiteImpl = async () => {
+  site.value = await siteAPI.get(siteId.value)
+
+  queueCount.value = await queueAPI.count(siteId.value)
+  pageCount.value = await pageAPI.count(siteId.value)
+}
+
 const fetchSite = async () => {
   loading.value = true
 
   try {
-    site.value = await siteAPI.get(siteId.value)
-
-    queueCount.value = await queueAPI.count(siteId.value)
-    pageCount.value = await pageAPI.count(siteId.value)
+    await fetchSiteImpl()
   } catch (err) {
     toast.add({ severity: 'error', summary: 'エラーが発生しました', detail: err })
   } finally {
@@ -99,7 +106,7 @@ const onClear = async () => {
 
   try {
     walker.clear(site.value)
-    await fetchSite()
+    await fetchSiteImpl()
 
     toast.add({
       severity: 'success',
@@ -120,7 +127,7 @@ const onReset = async () => {
 
   try {
     walker.reset(site.value)
-    await fetchSite()
+    await fetchSiteImpl()
 
     toast.add({
       severity: 'success',
@@ -136,12 +143,15 @@ const onReset = async () => {
   }
 }
 
-const onExecute = async () => {
+const onExecute = async (infinite: boolean) => {
   loading.value = true
 
   try {
-    await walker.execute(site.value)
-    await fetchSite()
+    // eslint-disable-next-line no-unmodified-loop-condition
+    while (infinite || queueCount.value > 0) {
+      await walker.execute(site.value)
+      await fetchSiteImpl()
+    }
 
     toast.add({
       severity: 'success',
