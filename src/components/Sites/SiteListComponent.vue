@@ -31,12 +31,12 @@
     <Column>
       <template #body="{ data }">
         <nuxt-link class="mx-1 no-underline-all" :to="{ name: 'sites-id', params: { id: data.id } }">
-          <Button class="p-button-info" icon="pi pi-info" type="button" />
+          <Button class="p-button-info" icon="pi pi-folder" type="button" />
         </nuxt-link>
 
         <Button
           class="mx-1 p-button-success"
-          icon="pi pi-cog"
+          icon="pi pi-pencil"
           type="button"
           @click="openEditDialog(data)"
         />

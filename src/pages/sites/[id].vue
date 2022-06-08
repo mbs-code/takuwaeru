@@ -2,24 +2,29 @@
   <div>
     <div class="grid m-0">
       <div class="col-12 md:col-6">
-        <SiteInfoPanel :site="site" />
+        <SiteInfoPanel
+          :loading="loading"
+          :site="site"
+          @onEdit="showEditModal = true"
+        />
 
         <div class="h-1rem" />
-        <SiteImagePanel :blob="processResult.latestBlob.value" />
-      </div>
 
-      <div class="col-12 md:col-6">
         <SiteControlPanel
           :loading="loading"
           :page-count="pageCount"
           :process-result="processResult"
           :queue-count="queueCount"
+          :site="site"
           @onClear="onClear"
-          @onEdit="showEditModal = true"
           @onExecute="onExecute"
           @onInterrupt="onInterrupt"
           @onReset="onReset"
         />
+      </div>
+
+      <div class="col-12 md:col-6">
+        <SiteImagePanel :blob="processResult.latestBlob.value" />
 
         <div class="h-1rem" />
         <SiteLogPanel :logs="processLogger.logs.value" />

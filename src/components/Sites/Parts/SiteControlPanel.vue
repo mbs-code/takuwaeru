@@ -1,73 +1,112 @@
 <template>
   <Card>
     <template #content>
-      <div class="grid">
-        <Button
-          class="m-1"
-          :disabled="loading || queueCount === 0"
-          :icon="loading ? 'pi pi-spin pi-spinner' : ''"
-          :label="loading ? '' : 'Execute'"
-          @click="emit('onExecute')"
-        />
+      <div class="flex-column grid">
+        <div class="col">
+          <div class="flex">
+            <Button
+              class="mx-2"
+              :disabled="loading || queueCount === 0"
+              :icon="loading ? 'pi pi-spin pi-spinner' : 'pi pi-play'"
+              :label="loading ? '' : 'Run'"
+              @click="emit('onExecute')"
+            />
 
-        <Button
-          v-if="loading"
-          class="m-1  p-button-danger  p-button-outlined"
-          :disabled="!loading"
-          label="Interrupt"
-          @click="emit('onInterrupt')"
-        />
+            <Button
+              v-if="loading && queue"
+              class="mx-2 p-button-danger"
+              :disabled="!loading"
+              icon="pi pi-pause"
+              @click="emit('onInterrupt')"
+            />
 
-        <div class="flex-grow-1" />
+            <div class="flex-grow-1" />
 
-        <Button
-          class="m-1 p-button-success"
-          :disabled="loading"
-          label="Edit"
-          @click="emit('onEdit')"
-        />
+            <Button
+              class="mx-2 p-button-warning"
+              :disabled="loading"
+              label="Clear"
+              @click="emit('onClear')"
+            />
 
-        <Button
-          class="m-1 p-button-warning"
-          :disabled="loading"
-          label="Clear"
-          @click="emit('onClear')"
-        />
-
-        <Button
-          class="m-1 p-button-danger"
-          :disabled="loading"
-          label="Reset"
-          @click="emit('onReset')"
-        />
-      </div>
-
-      <div v-show="queueCount === 0" class="text-red-500">
-        キューが空です。
-      </div>
-
-      <div>残りキュー：{{ queueCount }}</div>
-      <div>処理ページ：{{ pageCount }}</div>
-
-      <div>処理中：</div>
-      <div v-if="queue">
-        <div class="align-items-center flex">
-          <span>{{ queue.page.url }}</span>
-          <Button
-            class="p-0 p-button-secondary p-button-text"
-            icon="pi pi-link"
-            @click="openBrowser(queue.page.url)"
-          />
+            <Button
+              class="mx-2 p-button-danger"
+              :disabled="loading"
+              label="Reset"
+              @click="emit('onReset')"
+            />
+          </div>
         </div>
-        <div>{{ queue.page.title || '-' }}</div>
-      </div>
 
-      <div v-for="(result, key) in processResult.queryResults.value" :key="key">
-        <span>{{ key }} {{ result.query.key }} {{ result.status }}</span>&nbsp;
-        <span>{{ result.task }} / {{ result.maxTask }}</span>
+        <div class="col py-0">
+          <hr>
+        </div>
 
-        <div v-if="result.status === 'exec' && result.maxTask !== 0">
-          <ProgressBar :value="perTask(result.task, result.maxTask)" />
+        <div class="col">
+          <div class="align-items-baseline flex">
+            <div class="white-space-nowrap">
+              <span>Queue</span>
+              <span class="px-2 text-4xl">
+                {{ queueCount.toLocaleString() }}
+              </span>
+            </div>
+
+            <div class="white-space-nowrap">
+              <span>Page</span>
+              <span class="px-2 text-4xl">
+                {{ pageCount.toLocaleString() }}
+              </span>
+            </div>
+          </div>
+
+          <div v-show="queueCount === 0" class="text-red-500">
+            キューが空です。
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="p-2 simple-border">
+            <div
+              class="border-left-3 pl-1"
+              :class="queueStatusColor"
+            >
+              <div class="align-items-center flex m-2">
+                <i class="mr-1 pi pi-file" />
+                <span>{{ (queue && queue.page.url) || '---' }}</span>
+                <Button
+                  v-if="queue"
+                  class="p-0 p-button-secondary p-button-text"
+                  icon="pi pi-link"
+                  @click="openBrowser(queue.page.url)"
+                />
+              </div>
+
+              <div class="align-items-center flex m-2">
+                <i class="mr-1 pi pi-angle-right" />
+                <span>{{ (queue && queue.page.title) || '----' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <table class="result-table w-full">
+            <template v-for="(result, key) in processResult.queryResults.value" :key="key">
+              <tr>
+                <td>
+                  <i class="mr-1 pi" :class="queryStatusMap[result.status]" />
+                </td>
+                <td>{{ result.query.key }}</td>
+                <td>{{ result.maxTask ? `${result.task} / ${result.maxTask}` : '-' }}</td>
+              </tr>
+
+              <tr v-if="loading && result.status === 'exec' && result.maxTask !== 0">
+                <td colspan="3">
+                  <ProgressBar :value="perTask(result.task, result.maxTask)" />
+                </td>
+              </tr>
+            </template>
+          </table>
         </div>
       </div>
     </template>
@@ -76,6 +115,7 @@
 
 <script setup lang="ts">
 import { open } from '@tauri-apps/api/shell'
+import { QueryStatus } from '~~/src/composables/useProcessResult'
 
 const props = defineProps<{
   processResult: ReturnType<typeof useProcessResult>,
@@ -93,12 +133,49 @@ const emit = defineEmits<{
   (event: 'onReset'): void,
 }>()
 
+/// ////////////////////////////////////////////////////////////
+
 const queue = computed(() => props.processResult.selectedQueue.value)
 const perTask = (num: number, deno: number) => parseFloat((num / deno * 100).toFixed(1))
 
-///
+const queueStatusColor = computed(() => {
+  if (!props.loading) {
+    return (props.processResult.selectedQueue.value)
+      ? 'border-green-500'
+      : 'border-500'
+  } else {
+    return 'border-blue-500'
+  }
+})
+
+const queryStatusMap: { [key in QueryStatus]: string } = {
+  wait: 'pi-ellipsis-h text-500',
+  exec: 'pi-play text-blue-500',
+  success: 'pi-check-circle text-green-500',
+  skip: 'pi-minus-circle text-yellow-500',
+}
+
+/// ////////////////////////////////////////////////////////////
 
 const openBrowser = async (url: string) => {
   await open(url)
 }
 </script>
+
+<style scoped lang="scss">
+@import 'primeflex/primeflex.scss';
+
+.result-table {
+  border: solid 1px var(--surface-400);
+  border-radius: .25rem;
+
+  th,td:not(:last-child) {
+    border-right: solid 1px var(--surface-400);
+  }
+
+  td {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+</style>

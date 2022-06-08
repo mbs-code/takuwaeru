@@ -1,9 +1,9 @@
 import { Queue } from '~~/src/apis/useQueueAPI'
 import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
 
-type QueryStatus = 'wait' | 'exec' | 'success' | 'skip'
+export type QueryStatus = 'wait' | 'exec' | 'success' | 'skip'
 
-type QueryResult = {
+export type QueryResult = {
   query: SiteQuery,
   status: QueryStatus,
   task: number,
