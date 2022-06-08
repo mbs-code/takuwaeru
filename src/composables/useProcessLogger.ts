@@ -42,6 +42,8 @@ export const useProcessLogger = () => {
     })
   }
 
+  event('Connected')
+
   return {
     logs: processLogs,
 
