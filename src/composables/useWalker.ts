@@ -16,6 +16,7 @@ export const useWalker = (
   processResult: ReturnType<typeof useProcessResult>,
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
+  onFresh?: () => Promise<void>,
 ) => {
   const interrupt = ref<boolean>(false)
 
@@ -133,6 +134,7 @@ export const useWalker = (
       }
 
       processResult.setQueryStatus(query, 'success')
+      if (onFresh) { await onFresh() }
       if (interrupt.value) { throw new InterruptError() }
     }
   }
@@ -155,6 +157,7 @@ export const useWalker = (
       if (res === false) { alreadyCount++ }
 
       processResult.setQueryTaskIncrement(query)
+      if (onFresh) { await onFresh() }
       if (interrupt.value) { throw new InterruptError() }
     }
 
@@ -222,6 +225,7 @@ export const useWalker = (
       })
 
       processResult.setQueryTaskIncrement(query)
+      if (onFresh) { await onFresh() }
       if (interrupt.value) { throw new InterruptError() }
     }
 

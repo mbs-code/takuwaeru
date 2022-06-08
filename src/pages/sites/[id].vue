@@ -59,8 +59,6 @@ const siteAPI = useSiteAPI()
 const pageAPI = usePageAPI()
 const queueAPI = useQueueAPI()
 
-const walker = useWalker(processLogger, processResult, pageAPI, queueAPI)
-
 /// ////////////////////////////////////////////////////////////
 
 const site = ref<Site>()
@@ -98,6 +96,8 @@ const fetchSite = async () => {
     loading.value = false
   }
 }
+
+const walker = useWalker(processLogger, processResult, pageAPI, queueAPI, fetchSiteImpl)
 
 /// ////////////////////////////////////////////////////////////
 
