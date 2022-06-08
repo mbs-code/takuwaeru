@@ -22,5 +22,8 @@ const props = defineProps<{
   blob: number[],
 }>()
 
-const imageUrl = computed(() => 'data:image/jpg;base64,' + btoa(String.fromCharCode(...(props.blob || []))))
+const imageUrl = computed(() => 'data:image/jpg;base64,' +
+btoa(new Uint8Array(props.blob).reduce(function (data, byte) {
+  return data + String.fromCharCode(byte)
+}, '')))
 </script>
