@@ -72,7 +72,7 @@
             >
               <div class="align-items-center flex m-2">
                 <i class="mr-1 pi pi-file" />
-                <span>{{ (queue && queue.page.url) || '---' }}</span>
+                <span>{{ (queue && queue.page.url) || '----' }}</span>
                 <Button
                   v-if="queue"
                   class="p-0 p-button-secondary p-button-text"
