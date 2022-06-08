@@ -151,6 +151,10 @@ const onExecute = async (infinite: boolean) => {
     while (infinite || queueCount.value > 0) {
       await walker.execute(site.value)
       await fetchSiteImpl()
+
+      if (!infinite || queueCount.value === 0) {
+        break
+      }
     }
 
     toast.add({
