@@ -136,6 +136,12 @@ impl Page {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PageOrBool {
+    Value(Page),
+    Bool(bool),
+}
+
 ///
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -75,7 +75,6 @@ pub fn queue_push(site_id: i64, param: QueueParam) -> Result<QueueWithPageOrBool
         let page_count = api::page::list_count(&conn, &Some(site_id), &Some(param.url.clone()))?;
         if page_count > 0 {
             return Ok(QueueWithPageOrBool::Bool(false));
-            // Err(new_err("This URL already exists"))?
         }
 
         // 親IDがあるなら取得する

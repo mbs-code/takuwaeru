@@ -3,7 +3,7 @@ use std::error::Error;
 use crate::{
     api::{self},
     db::get_conn,
-    model::{Page, PageParam},
+    model::{Page, PageOrBool, PageParam},
 };
 
 #[tauri::command]
@@ -60,6 +60,35 @@ pub fn page_get(page_id: i64) -> Result<Page, String> {
 }
 
 // NOTE page_create は queue 経由で行う必要がある
+
+#[tauri::command]
+pub fn page_create(param: PageParam) -> Result<PageOrBool, String> {
+    let do_steps = || -> Result<PageOrBool, Box<dyn Error>> {
+        let conn = get_conn()?.lock()?;
+
+        // 存在チェックを行う
+        let page_count =
+            api::page::list_count(&conn, &Some(param.site_id), &Some(param.url.clone()))?;
+        if page_count > 0 {
+            return Ok(PageOrBool::Bool(false));
+            // Err(new_err("This URL already exists"))?
+        }
+
+        let page_id = api::page::create(
+            &conn,
+            &param.site_id,
+            &param.parent_page_id,
+            &param.url,
+            &param.title,
+            &param.is_persist,
+        )?;
+
+        let new_page = api::page::get(&conn, &page_id)?;
+        Ok(PageOrBool::Value(new_page))
+    }();
+
+    return do_steps.map_err(|s| s.to_string());
+}
 
 #[tauri::command]
 pub fn page_update(page_id: i64, param: PageParam) -> Result<Page, String> {

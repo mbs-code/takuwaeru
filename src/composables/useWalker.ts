@@ -179,6 +179,7 @@ export const useWalker = (
       const exist = await pageAPI.count(site.id, link)
       if (exist) {
         processLogger.error(`[${i + 1}/${linkCnt}] Already processed.`)
+        processResult.setQueryTaskIncrement(query)
         continue
       }
 
@@ -198,10 +199,10 @@ export const useWalker = (
       await createDir(dirPath, { recursive: true })
 
       // パス生成
-      const name = ParseUtil.urlLastName(link)
+      const fileName = ParseUtil.urlLastName(link)
       const filePath = await pathJoin(
         dirPath,
-        sanitize(name || new Date().getTime().toString()),
+        sanitize(fileName || new Date().getTime().toString()),
       )
       processLogger.debug(`Path > ${filePath}`)
 
@@ -209,6 +210,15 @@ export const useWalker = (
       await writeBinaryFile({
         path: filePath,
         contents: blob,
+      })
+
+      // ページとして保存する
+      await pageAPI.create({
+        site_id: site.id,
+        parent_page_id: page.id,
+        url: link,
+        title: fileName,
+        is_persist: query.is_persist,
       })
 
       processResult.setQueryTaskIncrement(query)

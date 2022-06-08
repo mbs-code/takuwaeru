@@ -31,13 +31,6 @@
       </div>
     </div>
 
-    <hr>
-
-    <div class="m-2">
-      <div>サイト：</div>
-      {{ site }}
-    </div>
-
     <SiteEditDialog
       v-model:show="showEditModal"
       :site="site"

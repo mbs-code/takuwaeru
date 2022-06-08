@@ -18,6 +18,7 @@ fn main() {
             command::page::page_count,
             command::page::page_list,
             command::page::page_get,
+            command::page::page_create,
             command::page::page_update,
             command::page::page_delete,
             command::page::page_clear,

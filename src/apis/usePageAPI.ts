@@ -51,6 +51,13 @@ export const usePageAPI = () => {
     return page
   }
 
+  const create = async (param: FormPage) => {
+    const page: Page = await invoke('page_create', {
+      param,
+    })
+    return page
+  }
+
   const update = async (pageId: number, param: FormPage) => {
     const page: Page = await invoke('page_update', {
       pageId, param,
@@ -76,6 +83,7 @@ export const usePageAPI = () => {
     count,
     list,
     get,
+    create,
     update,
     remove,
     clear,
