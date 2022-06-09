@@ -18,6 +18,7 @@ import Textarea from 'primevue/textarea'
 import InputNumber from 'primevue/inputnumber'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
+import TabMenu from 'primevue/tabmenu'
 import Tag from 'primevue/tag'
 import ProgressBar from 'primevue/progressbar'
 import Image from 'primevue/image'
@@ -48,6 +49,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('InputNumber', InputNumber)
   nuxtApp.vueApp.component('TabView', TabView)
   nuxtApp.vueApp.component('TabPanel', TabPanel)
+  nuxtApp.vueApp.component('TabMenu', TabMenu)
   nuxtApp.vueApp.component('Tag', Tag)
   nuxtApp.vueApp.component('ProgressBar', ProgressBar)
   nuxtApp.vueApp.component('Image', Image)

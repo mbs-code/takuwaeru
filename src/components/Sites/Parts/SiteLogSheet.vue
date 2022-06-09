@@ -1,20 +1,16 @@
 <template>
-  <Card>
-    <template #content>
-      <div ref="scrollRef" class="h-14rem overflow-y-scroll">
-        <div
-          v-for="(log, _) of items"
-          :key="_"
-          :class="log.color"
-        >
-          <span class="inline-block w-5rem">
-            {{ log.dateStr }}
-          </span>
-          <span :class="log.color">{{ log.text }}</span>
-        </div>
-      </div>
-    </template>
-  </Card>
+  <div ref="scrollRef" class="h-14rem overflow-y-scroll">
+    <div
+      v-for="(log, _) of items"
+      :key="_"
+      :class="log.color"
+    >
+      <span class="inline-block w-5rem">
+        {{ log.dateStr }}
+      </span>
+      <span :class="log.color">{{ log.text }}</span>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

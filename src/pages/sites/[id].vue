@@ -25,10 +25,14 @@
       </div>
 
       <div class="col-12 md:col-6">
-        <SiteImagePanel :blob="processResult.latestBlob.value" />
+        <SiteSubPanel
+          :process-logger="processLogger"
+          :process-result="processResult"
+        />
+        <!-- <SiteImagePanel :blob="processResult.latestBlob.value" />
 
         <div class="h-1rem" />
-        <SiteLogPanel :logs="processLogger.logs.value" />
+        <SiteLogPanel :logs="processLogger.logs.value" /> -->
       </div>
     </div>
 
