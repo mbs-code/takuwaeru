@@ -10,12 +10,11 @@
 
         <div class="h-1rem" />
 
-        <SiteControlPanel
+        <SiteControlSheet
           :loading="loading"
           :page-count="pageCount"
           :process-result="processResult"
           :queue-count="queueCount"
-          :site="site"
           @onClear="onClear"
           @onExecute="onExecute(false)"
           @onExecuteLoop="onExecute(true)"
@@ -26,8 +25,16 @@
 
       <div class="col-12 md:col-6">
         <SiteSubPanel
+          :loading="loading"
+          :page-count="pageCount"
           :process-logger="processLogger"
           :process-result="processResult"
+          :queue-count="queueCount"
+          @onClear="onClear"
+          @onExecute="onExecute(false)"
+          @onExecuteLoop="onExecute(true)"
+          @onInterrupt="onInterrupt"
+          @onReset="onReset"
         />
         <!-- <SiteImagePanel :blob="processResult.latestBlob.value" />
 

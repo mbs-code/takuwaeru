@@ -31,8 +31,6 @@
 
 <script setup lang="ts">
 import { MenuItem } from 'primevue/menuitem'
-import { useProcessLogger } from '../../composables/useProcessLogger'
-import { useProcessResult } from '../../composables/useProcessResult'
 
 defineProps<{
   processLogger: ReturnType<typeof useProcessLogger>,
