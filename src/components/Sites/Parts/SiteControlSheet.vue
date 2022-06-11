@@ -22,6 +22,14 @@
               label="Run"
               @click="onExecute(true)"
             />
+
+            <Button
+              class="mx-2 p-button-warning"
+              :disabled="queueCount === 0"
+              icon="pi pi-search"
+              label="Dry"
+              @click="onExecute(false, true)"
+            />
           </template>
 
           <template v-if="loading && queue">
@@ -145,7 +153,7 @@ const props = defineProps<{
 
 const onClear = inject<() => Promise<void>>('onClear')
 const onReset = inject<() => Promise<void>>('onReset')
-const onExecute = inject<(infinite: boolean) => Promise<void>>('onExecute')
+const onExecute = inject<(infinite: boolean, dryrun?: boolean) => Promise<void>>('onExecute')
 const onInterrupt = inject<() => Promise<void>>('onInterrupt')
 
 /// ////////////////////////////////////////////////////////////

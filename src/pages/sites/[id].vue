@@ -168,13 +168,13 @@ const onReset = async () => {
   }
 }
 
-const onExecute = async (infinite: boolean) => {
+const onExecute = async (infinite: boolean, dryrun = false) => {
   loading.value = true
 
   try {
     // eslint-disable-next-line no-unmodified-loop-condition
     while (infinite || queues.value.length > 0) {
-      await walker.execute(site.value)
+      await walker.execute(site.value, dryrun)
       await fetchSiteImpl()
 
       if (!infinite || queues.value.length === 0) {

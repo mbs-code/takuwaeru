@@ -68,7 +68,7 @@ export const useWalker = (
     })
   }
 
-  const execute = async (site: Site) => {
+  const execute = async (site: Site, dryrun = false) => {
     interrupt.value = false
     processLogger.event('Execute')
     processResult.init(site)
@@ -93,25 +93,28 @@ export const useWalker = (
     processLogger.info(`Title > ${title}`)
 
     // クエリを実行する
-    await handleQueries(site.site_queries, $, site, page)
+    await handleQueries(site.site_queries, $, site, page, dryrun)
 
     // ページを保存する
-    await pageAPI.update(page.id, {
-      site_id: page.site_id,
-      parent_page_id: page.parent_page_id,
-      url: page.url,
-      title: page.title,
-      is_persist: page.is_persist,
-    })
+    if (!dryrun) {
+      await pageAPI.update(page.id, {
+        site_id: page.site_id,
+        parent_page_id: page.parent_page_id,
+        url: page.url,
+        title: page.title,
+        is_persist: page.is_persist,
+      })
 
-    // キューからページを削除する
-    await queueAPI.remove(queue.id)
+      // キューからページを削除する
+      await queueAPI.remove(queue.id)
+    }
+
     processLogger.event(`Complete > [${page.id}] ${page.url}`)
   }
 
   /// ////////////////////////////////////////////////////////////
 
-  const handleQueries = async (queries: SiteQuery[], $: CheerioAPI, site: Site, page: Page) => {
+  const handleQueries = async (queries: SiteQuery[], $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
     for (const query of queries) {
       processResult.setQueryStatus(query, 'exec')
 
@@ -126,10 +129,10 @@ export const useWalker = (
       processLogger.info(`[Query] > ${query.key}`)
       switch (query.processor) {
         case 'extract':
-          await handleExtract(query, $, site, page)
+          await handleExtract(query, $, site, page, dryrun)
           break
         case 'download':
-          await handledownload(query, $, site, page)
+          await handledownload(query, $, site, page, dryrun)
           break
         default:
           throw new Error(`Illegal process : ${query.processor}`)
@@ -141,7 +144,7 @@ export const useWalker = (
     }
   }
 
-  const handleExtract = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
+  const handleExtract = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
     processLogger.debug(`Extract > ${links.length} links`)
@@ -150,13 +153,15 @@ export const useWalker = (
     // キューに追加する（失敗する可能性あり）
     let alreadyCount = 0
     for (const link of links) {
-      const res = await queueAPI.add(site.id, {
-        url: link,
-        parent_page_id: page.id,
-        priority: query.priority,
-        is_persist: query.is_persist,
-      })
-      if (res === false) { alreadyCount++ }
+      if (!dryrun) {
+        const res = await queueAPI.add(site.id, {
+          url: link,
+          parent_page_id: page.id,
+          priority: query.priority,
+          is_persist: query.is_persist,
+        })
+        if (res === false) { alreadyCount++ }
+      }
 
       processResult.setQueryTaskIncrement(query)
       // if (onFresh) { await onFresh() } // NOTE: 重すぎるので消しておく
@@ -166,7 +171,7 @@ export const useWalker = (
     processLogger.debug(`Enque > ${links.length - alreadyCount} links (already: ${alreadyCount})`)
   }
 
-  const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
+  const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
     const linkCnt = links.length
@@ -230,8 +235,8 @@ export const useWalker = (
 
         loop = false
       }
-      processLogger.debug(`Path > ${filePath}`)
       const fullPath = await pathJoin('temp', filePath)
+      processLogger.debug(`Path > ${fullPath}`)
 
       // ディレクトリチェック
       const dirPath = await dirname(fullPath)
@@ -244,13 +249,15 @@ export const useWalker = (
       })
 
       // ページとして保存する
-      await pageAPI.create({
-        site_id: site.id,
-        parent_page_id: page.id,
-        url: link,
-        title: fileName,
-        is_persist: query.is_persist,
-      })
+      if (!dryrun) {
+        await pageAPI.create({
+          site_id: site.id,
+          parent_page_id: page.id,
+          url: link,
+          title: fileName,
+          is_persist: query.is_persist,
+        })
+      }
 
       processResult.setQueryTaskIncrement(query)
       if (onFresh) { await onFresh() }
