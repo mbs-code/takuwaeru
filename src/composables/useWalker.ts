@@ -159,7 +159,7 @@ export const useWalker = (
       if (res === false) { alreadyCount++ }
 
       processResult.setQueryTaskIncrement(query)
-      if (onFresh) { await onFresh() }
+      // if (onFresh) { await onFresh() } // NOTE: 重すぎるので消しておく
       if (interrupt.value) { throw new InterruptError() }
     }
 
