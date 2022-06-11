@@ -1,5 +1,5 @@
 import { createDir, writeBinaryFile } from '@tauri-apps/api/fs'
-import { join as pathJoin } from '@tauri-apps/api/path'
+import { dirname, join as pathJoin } from '@tauri-apps/api/path'
 import { CheerioAPI } from 'cheerio'
 import sanitize from 'sanitize-filename'
 import { Response } from '@tauri-apps/api/http'
@@ -47,6 +47,7 @@ export const useWalker = (
     await queueAPI.add(site.id, {
       url: site.url,
       priority: 0,
+      parent_page_id: 0,
       is_persist: false,
     })
   }
@@ -62,6 +63,7 @@ export const useWalker = (
     await queueAPI.add(site.id, {
       url: site.url,
       priority: 0,
+      parent_page_id: 0,
       is_persist: false,
     })
   }
@@ -165,9 +167,6 @@ export const useWalker = (
   }
 
   const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page) => {
-    // 親を取り出す // TODO:
-    // const parentPage = await pageAPI.get(page.parent_page_id)
-
     // URL を全て抜き出す
     const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
     const linkCnt = links.length
@@ -187,31 +186,60 @@ export const useWalker = (
       }
 
       // 画像を取得する
-      // TODO: reffer
-      const blob = await HttpUtil.fetchBlob(link, undefined, (res: Response<number[]>) => {
+      const blob = await HttpUtil.fetchBlob(link, page.url, (res: Response<number[]>) => {
         processLogger.debug(`Fetch > ${res.data.length.toLocaleString()} byte`)
       })
+      const fileName = ParseUtil.urlLastName(link)
+
+      // バッファに保存
       processResult.latestBlob.value = blob
 
-      // ディレクトリチェック
-      const dirPath = await pathJoin(
-        'temp',
-        sanitize(site.title || 'unknown'),
-        sanitize(page.title || 'unknown'),
-      )
-      await createDir(dirPath, { recursive: true })
-
       // パス生成
-      const fileName = ParseUtil.urlLastName(link)
-      const filePath = await pathJoin(
-        dirPath,
-        sanitize(fileName || new Date().getTime().toString()),
-      )
+      let filePath = query.filename ?? ''
+      let loop = true
+      while (loop) {
+        const siteRegexTest = /{site}/.test(filePath)
+        if (siteRegexTest) {
+          filePath = filePath.replace('{site}', sanitize(site.title || 'unknown'))
+        }
+
+        const nameRegexTest = /{name}/.test(filePath)
+        if (nameRegexTest) {
+          filePath = filePath.replace('{name}', sanitize(fileName || 'name'))
+        }
+
+        const pageRegexRes = /{page:(\d+)(:(.+?))?}/.exec(filePath)
+        if (pageRegexRes?.length) {
+          // NOTE: { 0: all, 1: parent num, 2: ignore all, 3: ignore text }
+          const cnt = parseInt(pageRegexRes?.at(1)) ?? 0
+          const ignoreText = pageRegexRes?.at(3) ?? ''
+
+          let parentPage = page
+          for (let i = 0; i < cnt; i++) {
+            if (parentPage && parentPage.parent_page_id > 0) {
+              parentPage = await pageAPI.get(page.parent_page_id)
+            } else {
+              parentPage = null
+            }
+          }
+
+          const text = (parentPage?.title || 'unknown').replace(ignoreText, '')
+          filePath = filePath.replace(pageRegexRes[0], sanitize(text))
+          continue
+        }
+
+        loop = false
+      }
       processLogger.debug(`Path > ${filePath}`)
+      const fullPath = await pathJoin('temp', filePath)
+
+      // ディレクトリチェック
+      const dirPath = await dirname(fullPath)
+      await createDir(dirPath, { recursive: true })
 
       // バイナリを保存する
       await writeBinaryFile({
-        path: filePath,
+        path: fullPath,
         contents: blob,
       })
 
