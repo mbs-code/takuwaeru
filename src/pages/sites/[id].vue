@@ -10,26 +10,28 @@
 
         <div class="h-1rem" />
 
-      <!-- <SiteControlSheet
-        :loading="loading"
-        :page-count="pageCount"
-        :process-result="processResult"
-        :queue-count="queueCount"
-        @onClear="onClear"
-        @onExecute="onExecute(false)"
-        @onExecuteLoop="onExecute(true)"
-        @onInterrupt="onInterrupt"
-        @onReset="onReset"
-      /> -->
-      </div>
-
-      <div class="col-12 md:col-6">
         <SiteSubPanel
+          :default-tab="0"
+          :height="height - 274"
           :loading="loading"
           :page-count="pageCount"
           :process-logger="processLogger"
           :process-result="processResult"
           :queue-count="queueCount"
+          :show-tabs="false"
+        />
+      </div>
+
+      <div class="col-12 md:col-6">
+        <SiteSubPanel
+          :default-tab="0"
+          :height="height - 190"
+          :loading="loading"
+          :page-count="pageCount"
+          :process-logger="processLogger"
+          :process-result="processResult"
+          :queue-count="queueCount"
+          show-tabs
         />
       </div>
     </div>
@@ -45,6 +47,7 @@
 
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
+import { useWindowSize } from 'vue-window-size'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { usePageAPI } from '~~/src/apis/usePageAPI'
 import { useQueueAPI } from '~~/src/apis/useQueueAPI'
@@ -60,6 +63,8 @@ const processResult = useProcessResult()
 const siteAPI = useSiteAPI()
 const pageAPI = usePageAPI()
 const queueAPI = useQueueAPI()
+
+const { height } = useWindowSize()
 
 /// ////////////////////////////////////////////////////////////
 

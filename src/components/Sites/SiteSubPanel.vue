@@ -2,6 +2,7 @@
   <Card>
     <template #content>
       <TabMenu
+        v-if="showTabs"
         v-model:activeIndex="tabIndex"
         class="mb-3"
         :model="tabHeaders"
@@ -10,7 +11,7 @@
       <div
         ref="scrollRef"
         class="overflow-x-hidden overflow-y-scroll pr-2"
-        :style="`height: ${height - 190}px`"
+        :style="`height: ${height}px`"
       >
         <SiteSheet
           :loading="loading"
@@ -27,19 +28,19 @@
 
 <script setup lang="ts">
 import { MenuItem } from 'primevue/menuitem'
-import { useWindowSize } from 'vue-window-size'
 
-defineProps<{
+const props = defineProps<{
   processLogger: ReturnType<typeof useProcessLogger>,
   processResult: ReturnType<typeof useProcessResult>,
   queueCount: number,
   pageCount: number,
   loading: boolean,
+  height: number,
+  showTabs: boolean,
+  defaultTab: number,
 }>()
 
-const { height } = useWindowSize()
-
-const tabIndex = ref<number>(0)
+const tabIndex = ref<number>(props.defaultTab)
 const tabHeaders = ref<MenuItem[]>([
   { label: 'コンパネ' },
   { label: 'サムネイル' },
