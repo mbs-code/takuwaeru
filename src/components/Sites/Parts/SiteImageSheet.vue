@@ -1,5 +1,5 @@
 <template>
-  <div class="surface-100">
+  <div class="h-full surface-100">
     <img
       v-if="props.blob && props.blob.length > 0"
       alt="Image Text"
@@ -7,7 +7,7 @@
       :src="imageUrl"
       style="object-fit: contain"
     >
-    <div v-else class="align-items-center block flex h-30rem justify-content-center w-full">
+    <div v-else class="align-items-center block flex h-full justify-content-center w-full">
       <div>No Image</div>
     </div>
   </div>
