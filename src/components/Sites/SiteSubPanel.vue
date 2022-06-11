@@ -19,12 +19,6 @@
           :process-result="processResult"
           :queue-count="queueCount"
           :tab-index="tabIndex"
-          @onClear="emit('onClear')"
-          @onExecute="emit('onExecute')"
-          @onExecuteLoop="emit('onExecute')"
-          @onInterrupt="emit('onInterrupt')"
-          @onReset="emit('onReset')"
-          @scrollToBottom="scrollToBottom"
         />
       </div>
     </template>
@@ -43,15 +37,6 @@ defineProps<{
   loading: boolean,
 }>()
 
-// eslint-disable-next-line func-call-spacing
-const emit = defineEmits<{
-  (event: 'onExecute'): void,
-  (event: 'onExecuteLoop'): void,
-  (event: 'onInterrupt'): void,
-  (event: 'onClear'): void,
-  (event: 'onReset'): void,
-}>()
-
 const { height } = useWindowSize()
 
 const tabIndex = ref<number>(0)
@@ -68,4 +53,6 @@ const scrollToBottom = () => {
     top: ref.scrollHeight + 200, behavior: 'smooth'
   })
 }
+
+provide('scrollToBottom', scrollToBottom)
 </script>

@@ -19,10 +19,7 @@ const props = defineProps<{
   logs: ProcessLog[],
 }>()
 
-// eslint-disable-next-line func-call-spacing
-const emit = defineEmits<{
-  (event: 'scrollToBottom'): void,
-}>()
+const scrollToBottom = inject<() => void>('scrollToBottom')
 
 ///
 
@@ -34,7 +31,7 @@ const colorMap: { [key in ProcessLogType]: string } = {
 }
 
 watch(props.logs, () => {
-  emit('scrollToBottom')
+  scrollToBottom()
 })
 
 const items = computed(() => props.logs.map((log) => {

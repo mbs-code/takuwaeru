@@ -8,7 +8,7 @@
             :disabled="queueCount === 0"
             icon="pi pi-play"
             label="Once"
-            @click="emit('onExecute')"
+            @click="onExecute(false)"
           />
 
           <Button
@@ -16,7 +16,7 @@
             :disabled="queueCount === 0"
             icon="pi pi-forward"
             label="Run"
-            @click="emit('onExecuteLoop')"
+            @click="onExecute(true)"
           />
         </template>
 
@@ -31,7 +31,7 @@
             class="mx-2 p-button-danger"
             :disabled="!loading"
             icon="pi pi-pause"
-            @click="emit('onInterrupt')"
+            @click="onInterrupt()"
           />
         </template>
 
@@ -41,14 +41,14 @@
           class="mx-2 p-button-warning"
           :disabled="loading"
           label="Clear"
-          @click="emit('onClear')"
+          @click="onClear()"
         />
 
         <Button
           class="mx-2 p-button-danger"
           :disabled="loading"
           label="Reset"
-          @click="emit('onReset')"
+          @click="onReset()"
         />
       </div>
     </div>
@@ -137,14 +137,10 @@ const props = defineProps<{
   loading: boolean,
 }>()
 
-// eslint-disable-next-line func-call-spacing
-const emit = defineEmits<{
-  (event: 'onExecute'): void,
-  (event: 'onExecuteLoop'): void,
-  (event: 'onInterrupt'): void,
-  (event: 'onClear'): void,
-  (event: 'onReset'): void,
-}>()
+const onClear = inject<() => Promise<void>>('onClear')
+const onReset = inject<() => Promise<void>>('onReset')
+const onExecute = inject<(infinite: boolean) => Promise<void>>('onExecute')
+const onInterrupt = inject<() => Promise<void>>('onInterrupt')
 
 /// ////////////////////////////////////////////////////////////
 

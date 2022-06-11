@@ -30,16 +30,7 @@
           :process-logger="processLogger"
           :process-result="processResult"
           :queue-count="queueCount"
-          @onClear="onClear"
-          @onExecute="onExecute(false)"
-          @onExecuteLoop="onExecute(true)"
-          @onInterrupt="onInterrupt"
-          @onReset="onReset"
         />
-      <!-- <SiteImagePanel :blob="processResult.latestBlob.value" />
-
-      <div class="h-1rem" />
-      <SiteLogPanel :logs="processLogger.logs.value" /> -->
       </div>
     </div>
 
@@ -109,6 +100,17 @@ const fetchSite = async () => {
 }
 
 const walker = useWalker(processLogger, processResult, pageAPI, queueAPI, fetchSiteImpl)
+
+/// ////////////////////////////////////////////////////////////
+
+const showEditModal = ref<boolean>(false)
+const onSaved = (newSite: Site) => {
+  site.value = newSite
+}
+
+const onRemoved = () => {
+  router.push({ name: 'index' })
+}
 
 /// ////////////////////////////////////////////////////////////
 
@@ -188,12 +190,8 @@ const onInterrupt = () => {
 
 /// ////////////////////////////////////////////////////////////
 
-const showEditModal = ref<boolean>(false)
-const onSaved = (newSite: Site) => {
-  site.value = newSite
-}
-
-const onRemoved = () => {
-  router.push({ name: 'index' })
-}
+provide('onClear', onClear)
+provide('onReset', onReset)
+provide('onExecute', onExecute)
+provide('onInterrupt', onInterrupt)
 </script>

@@ -5,11 +5,6 @@
     :page-count="pageCount"
     :process-result="processResult"
     :queue-count="queueCount"
-    @onClear="emit('onClear')"
-    @onExecute="emit('onExecute')"
-    @onExecuteLoop="emit('onExecute')"
-    @onInterrupt="emit('onInterrupt')"
-    @onReset="emit('onReset')"
   />
 
   <SiteImageSheet
@@ -20,7 +15,6 @@
   <SiteLogSheet
     v-if="tabIndex === 2"
     :logs="processLogger.logs.value"
-    @scrollToBottom="emit('scrollToBottom')"
   />
 </template>
 
@@ -32,15 +26,5 @@ defineProps<{
   pageCount: number,
   loading: boolean,
   tabIndex: number,
-}>()
-
-// eslint-disable-next-line func-call-spacing
-const emit = defineEmits<{
-  (event: 'onExecute'): void,
-  (event: 'onExecuteLoop'): void,
-  (event: 'onInterrupt'): void,
-  (event: 'onClear'): void,
-  (event: 'onReset'): void,
-  (event: 'scrollToBottom'): void,
 }>()
 </script>
