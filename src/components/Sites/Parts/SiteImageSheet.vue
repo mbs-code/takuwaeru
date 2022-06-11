@@ -1,11 +1,12 @@
 <template>
-  <div class="h-full surface-100">
+  <div class="surface-100" :style="`height: ${height}px`">
     <img
       v-if="props.blob && props.blob.length > 0"
       alt="Image Text"
-      class="block h-30rem w-full"
+      class="block w-full"
       :src="imageUrl"
       style="object-fit: contain"
+      :style="`height: ${height}px`"
     >
     <div v-else class="align-items-center block flex h-full justify-content-center w-full">
       <div>No Image</div>
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   blob: number[],
+  height: number,
 }>()
 
 const imageUrl = computed(() => 'data:image/jpg;base64,' +

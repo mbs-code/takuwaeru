@@ -1,13 +1,19 @@
 <template>
   <div
-    v-for="(log, _) of items"
-    :key="_"
-    :class="log.color"
+    ref="scrollRef"
+    class="overflow-x-hidden overflow-y-scroll pr-2"
+    :style="`height: ${height}px`"
   >
-    <span class="inline-block w-5rem">
-      {{ log.dateStr }}
-    </span>
-    <span :class="log.color">{{ log.text }}</span>
+    <div
+      v-for="(log, _) of items"
+      :key="_"
+      :class="log.color"
+    >
+      <span class="inline-block w-5rem">
+        {{ log.dateStr }}
+      </span>
+      <span :class="log.color">{{ log.text }}</span>
+    </div>
   </div>
 </template>
 
@@ -17,9 +23,8 @@ import { ProcessLog, ProcessLogType } from '~~/src/composables/useProcessLogger'
 
 const props = defineProps<{
   logs: ProcessLog[],
+  height: number,
 }>()
-
-const scrollToBottom = inject<() => void>('scrollToBottom')
 
 ///
 
@@ -30,8 +35,12 @@ const colorMap: { [key in ProcessLogType]: string } = {
   event: 'text-green-500',
 }
 
+const scrollRef = ref<HTMLDivElement>()
 watch(props.logs, () => {
-  scrollToBottom()
+  const ref = scrollRef.value
+  ref?.scrollTo({
+    top: ref.scrollHeight + 200, behavior: 'smooth'
+  })
 })
 
 const items = computed(() => props.logs.map((log) => {

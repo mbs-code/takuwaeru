@@ -8,20 +8,15 @@
         :model="tabHeaders"
       />
 
-      <div
-        ref="scrollRef"
-        class="overflow-x-hidden overflow-y-scroll pr-2"
-        :style="`height: ${height}px`"
-      >
-        <SiteSheet
-          :loading="loading"
-          :page-count="pageCount"
-          :process-logger="processLogger"
-          :process-result="processResult"
-          :queue-count="queueCount"
-          :tab-index="tabIndex"
-        />
-      </div>
+      <SiteSheet
+        :height="height"
+        :loading="loading"
+        :page-count="pageCount"
+        :process-logger="processLogger"
+        :process-result="processResult"
+        :queue-count="queueCount"
+        :tab-index="tabIndex"
+      />
     </template>
   </Card>
 </template>

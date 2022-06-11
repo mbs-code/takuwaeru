@@ -1,6 +1,7 @@
 <template>
   <SiteControlSheet
     v-if="tabIndex === 0"
+    :height="height"
     :loading="loading"
     :page-count="pageCount"
     :process-result="processResult"
@@ -10,14 +11,19 @@
   <SiteImageSheet
     v-if="tabIndex === 1"
     :blob="processResult.latestBlob.value"
+    :height="height"
   />
 
   <SiteLogSheet
     v-if="tabIndex === 2"
+    :height="height"
     :logs="processLogger.logs.value"
   />
 
-  <SiteQueueSheet v-if="tabIndex === 3" />
+  <SiteQueueSheet
+    v-if="tabIndex === 3"
+    :height="height"
+  />
 </template>
 
 <script setup lang="ts">
@@ -28,5 +34,6 @@ defineProps<{
   pageCount: number,
   loading: boolean,
   tabIndex: number,
+  height: number,
 }>()
 </script>
