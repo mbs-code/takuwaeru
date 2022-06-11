@@ -17,7 +17,7 @@
           :page-count="pageCount"
           :process-logger="processLogger"
           :process-result="processResult"
-          :queue-count="queueCount"
+          :queue-count="queues.length"
           :show-tabs="false"
         />
       </div>
@@ -30,7 +30,7 @@
           :page-count="pageCount"
           :process-logger="processLogger"
           :process-result="processResult"
-          :queue-count="queueCount"
+          :queue-count="queues.length"
           show-tabs
         />
       </div>
@@ -50,7 +50,7 @@ import { useToast } from 'primevue/usetoast'
 import { useWindowSize } from 'vue-window-size'
 import { Site, useSiteAPI } from '@/apis/useSiteAPI'
 import { usePageAPI } from '~~/src/apis/usePageAPI'
-import { useQueueAPI } from '~~/src/apis/useQueueAPI'
+import { Queue, useQueueAPI } from '~~/src/apis/useQueueAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 
 const route = useRoute()
@@ -69,7 +69,7 @@ const { height } = useWindowSize()
 /// ////////////////////////////////////////////////////////////
 
 const site = ref<Site>()
-const queueCount = ref<number>(0)
+const queues = ref<Queue[]>([])
 const pageCount = ref<number>(0)
 
 const siteId = ref<number>()
@@ -88,7 +88,13 @@ onMounted(async () => {
 const fetchSiteImpl = async () => {
   site.value = await siteAPI.get(siteId.value)
 
-  queueCount.value = await queueAPI.count(siteId.value)
+  queues.value = await queueAPI.list({
+    siteId: siteId.value,
+    page: 1,
+    perPage: null,
+    order: 'priority',
+  })
+
   pageCount.value = await pageAPI.count(siteId.value)
 }
 
@@ -166,11 +172,11 @@ const onExecute = async (infinite: boolean) => {
 
   try {
     // eslint-disable-next-line no-unmodified-loop-condition
-    while (infinite || queueCount.value > 0) {
+    while (infinite || queues.value.length > 0) {
       await walker.execute(site.value)
       await fetchSiteImpl()
 
-      if (!infinite || queueCount.value === 0) {
+      if (!infinite || queues.value.length === 0) {
         break
       }
     }
@@ -194,6 +200,8 @@ const onInterrupt = () => {
 }
 
 /// ////////////////////////////////////////////////////////////
+
+provide('queues', queues)
 
 provide('onClear', onClear)
 provide('onReset', onReset)

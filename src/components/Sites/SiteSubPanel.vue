@@ -45,6 +45,7 @@ const tabHeaders = ref<MenuItem[]>([
   { label: 'コンパネ' },
   { label: 'サムネイル' },
   { label: 'ログ' },
+  { label: 'キュー' },
 ])
 
 const scrollRef = ref<HTMLDivElement>()

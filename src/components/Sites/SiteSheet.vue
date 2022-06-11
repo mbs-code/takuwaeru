@@ -16,6 +16,8 @@
     v-if="tabIndex === 2"
     :logs="processLogger.logs.value"
   />
+
+  <SiteQueueSheet v-if="tabIndex === 3" />
 </template>
 
 <script setup lang="ts">
