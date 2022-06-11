@@ -1,15 +1,13 @@
 <template>
-  <div ref="scrollRef" class="h-14rem overflow-y-scroll">
-    <div
-      v-for="(log, _) of items"
-      :key="_"
-      :class="log.color"
-    >
-      <span class="inline-block w-5rem">
-        {{ log.dateStr }}
-      </span>
-      <span :class="log.color">{{ log.text }}</span>
-    </div>
+  <div
+    v-for="(log, _) of items"
+    :key="_"
+    :class="log.color"
+  >
+    <span class="inline-block w-5rem">
+      {{ log.dateStr }}
+    </span>
+    <span :class="log.color">{{ log.text }}</span>
   </div>
 </template>
 
@@ -21,6 +19,13 @@ const props = defineProps<{
   logs: ProcessLog[],
 }>()
 
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (event: 'scrollToBottom'): void,
+}>()
+
+///
+
 const colorMap: { [key in ProcessLogType]: string } = {
   info: 'text-blue-500',
   debug: 'text-500',
@@ -28,15 +33,8 @@ const colorMap: { [key in ProcessLogType]: string } = {
   event: 'text-green-500',
 }
 
-const scrollRef = ref<HTMLDivElement>()
-
 watch(props.logs, () => {
-  const ref = scrollRef.value
-  if (ref) {
-    nextTick(() => {
-      ref.scrollTo({ top: ref.scrollHeight + 200, behavior: 'smooth' })
-    })
-  }
+  emit('scrollToBottom')
 })
 
 const items = computed(() => props.logs.map((log) => {

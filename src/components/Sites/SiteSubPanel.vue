@@ -1,38 +1,39 @@
 <template>
-  <TabMenu v-model:activeIndex="tabIndex" :model="tabHeaders" />
-
   <Card>
     <template #content>
-      <SiteControlSheet
-        v-if="tabIndex === 0"
-        :loading="loading"
-        :page-count="pageCount"
-        :process-result="processResult"
-        :queue-count="queueCount"
-        @onClear="emit('onClear')"
-        @onExecute="emit('onExecute')"
-        @onExecuteLoop="emit('onExecute')"
-        @onInterrupt="emit('onInterrupt')"
-        @onReset="emit('onReset')"
+      <TabMenu
+        v-model:activeIndex="tabIndex"
+        class="mb-3"
+        :model="tabHeaders"
       />
 
-      <SiteImageSheet
-        v-if="tabIndex === 1"
-        :blob="processResult.latestBlob.value"
-      />
-
-      <SiteLogSheet
-        v-if="tabIndex === 2"
-        :logs="processLogger.logs.value"
-      />
+      <div
+        ref="scrollRef"
+        class="overflow-x-hidden overflow-y-scroll pr-2"
+        :style="`height: ${height - 190}px`"
+      >
+        <SiteSheet
+          :loading="loading"
+          :page-count="pageCount"
+          :process-logger="processLogger"
+          :process-result="processResult"
+          :queue-count="queueCount"
+          :tab-index="tabIndex"
+          @onClear="emit('onClear')"
+          @onExecute="emit('onExecute')"
+          @onExecuteLoop="emit('onExecute')"
+          @onInterrupt="emit('onInterrupt')"
+          @onReset="emit('onReset')"
+          @scrollToBottom="scrollToBottom"
+        />
+      </div>
     </template>
   </Card>
 </template>
 
 <script setup lang="ts">
 import { MenuItem } from 'primevue/menuitem'
-import { useProcessLogger } from '../../composables/useProcessLogger'
-import { useProcessResult } from '../../composables/useProcessResult'
+import { useWindowSize } from 'vue-window-size'
 
 defineProps<{
   processLogger: ReturnType<typeof useProcessLogger>,
@@ -51,10 +52,20 @@ const emit = defineEmits<{
   (event: 'onReset'): void,
 }>()
 
+const { height } = useWindowSize()
+
 const tabIndex = ref<number>(0)
 const tabHeaders = ref<MenuItem[]>([
   { label: 'コンパネ' },
   { label: 'サムネイル' },
   { label: 'ログ' },
 ])
+
+const scrollRef = ref<HTMLDivElement>()
+const scrollToBottom = () => {
+  const ref = scrollRef.value
+  ref?.scrollTo({
+    top: ref.scrollHeight + 200, behavior: 'smooth'
+  })
+}
 </script>

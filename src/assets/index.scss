@@ -50,3 +50,7 @@ body {
   color: #ffffff !important;
   background-color: #5e8f32 !important;
 }
+
+.p-card-content {
+  @include styleclass('p-0');
+}

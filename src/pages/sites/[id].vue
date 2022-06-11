@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="grid m-0">
+    <div class="grid h-full m-0">
       <div class="col-12 md:col-6">
         <SiteInfoPanel
           :loading="loading"
@@ -10,17 +10,17 @@
 
         <div class="h-1rem" />
 
-        <SiteControlSheet
-          :loading="loading"
-          :page-count="pageCount"
-          :process-result="processResult"
-          :queue-count="queueCount"
-          @onClear="onClear"
-          @onExecute="onExecute(false)"
-          @onExecuteLoop="onExecute(true)"
-          @onInterrupt="onInterrupt"
-          @onReset="onReset"
-        />
+      <!-- <SiteControlSheet
+        :loading="loading"
+        :page-count="pageCount"
+        :process-result="processResult"
+        :queue-count="queueCount"
+        @onClear="onClear"
+        @onExecute="onExecute(false)"
+        @onExecuteLoop="onExecute(true)"
+        @onInterrupt="onInterrupt"
+        @onReset="onReset"
+      /> -->
       </div>
 
       <div class="col-12 md:col-6">
@@ -36,10 +36,10 @@
           @onInterrupt="onInterrupt"
           @onReset="onReset"
         />
-        <!-- <SiteImagePanel :blob="processResult.latestBlob.value" />
+      <!-- <SiteImagePanel :blob="processResult.latestBlob.value" />
 
-        <div class="h-1rem" />
-        <SiteLogPanel :logs="processLogger.logs.value" /> -->
+      <div class="h-1rem" />
+      <SiteLogPanel :logs="processLogger.logs.value" /> -->
       </div>
     </div>
 
