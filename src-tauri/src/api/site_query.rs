@@ -3,7 +3,10 @@ use std::error::Error;
 use rusqlite::Connection;
 use sql_builder::{bind::Bind, quote, SqlBuilder};
 
-use crate::{db::chrono_now, model::SiteQuery};
+use crate::{
+    db::chrono_now,
+    model::{SiteQuery, SiteQueryParam},
+};
 
 pub fn list(
     conn: &Connection,
@@ -66,15 +69,7 @@ pub fn get(conn: &Connection, site_query_id: &i64) -> Result<SiteQuery, Box<dyn 
 pub fn create(
     conn: &Connection,
     site_id: &i64,
-    key: &String,
-    url_pattern: &String,
-    processor: &String,
-    dom_selector: &Option<String>,
-    url_filter: &String,
-    title_filter: &Option<String>,
-    nest_parent: &i64,
-    is_persist: &bool,
-    priority: &i64,
+    params: &SiteQueryParam,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::insert_into("site_queries")
@@ -84,8 +79,7 @@ pub fn create(
         .field("processor")
         .field("dom_selector")
         .field("url_filter")
-        .field("title_filter")
-        .field("nest_parent")
+        .field("filename")
         .field("is_persist")
         .field("priority")
         .field("created_at")
@@ -97,24 +91,22 @@ pub fn create(
             ":processor:",
             ":dom_selector:",
             ":url_filter:",
-            ":title_filter:",
-            ":nest_parent:",
+            ":filename:",
             ":is_persist:",
             ":priority:",
             &quote(&now),
             &quote(&now),
         ])
         .sql()?
-        .bind_name(&"site_id", site_id)
-        .bind_name(&"key", key)
-        .bind_name(&"url_pattern", url_pattern)
-        .bind_name(&"processor", processor)
-        .bind_name(&"dom_selector", dom_selector)
-        .bind_name(&"url_filter", url_filter)
-        .bind_name(&"title_filter", title_filter)
-        .bind_name(&"nest_parent", nest_parent)
-        .bind_name(&"is_persist", is_persist)
-        .bind_name(&"priority", priority);
+        .bind_name(&"site_id", &site_id)
+        .bind_name(&"key", &params.key)
+        .bind_name(&"url_pattern", &params.url_pattern)
+        .bind_name(&"processor", &params.processor)
+        .bind_name(&"dom_selector", &params.dom_selector)
+        .bind_name(&"url_filter", &params.url_filter)
+        .bind_name(&"filename", &params.filename)
+        .bind_name(&"is_persist", &params.is_persist)
+        .bind_name(&"priority", &params.priority);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
@@ -132,15 +124,7 @@ pub fn update(
     conn: &Connection,
     site_query_id: &i64,
     site_id: &i64,
-    key: &String,
-    url_pattern: &String,
-    processor: &String,
-    dom_selector: &Option<String>,
-    url_filter: &String,
-    title_filter: &Option<String>,
-    nest_parent: &i64,
-    is_persist: &bool,
-    priority: &i64,
+    params: &SiteQueryParam,
 ) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("site_queries")
@@ -150,23 +134,21 @@ pub fn update(
         .set("processor", ":processor:")
         .set("dom_selector", ":dom_selector:")
         .set("url_filter", ":url_filter:")
-        .set("title_filter", ":title_filter:")
-        .set("nest_parent", ":nest_parent:")
+        .set("filename", ":filename:")
         .set("is_persist", ":is_persist:")
         .set("priority", ":priority:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_query_id))
         .sql()?
-        .bind_name(&"site_id", site_id)
-        .bind_name(&"key", key)
-        .bind_name(&"url_pattern", url_pattern)
-        .bind_name(&"processor", processor)
-        .bind_name(&"dom_selector", dom_selector)
-        .bind_name(&"url_filter", url_filter)
-        .bind_name(&"title_filter", title_filter)
-        .bind_name(&"nest_parent", nest_parent)
-        .bind_name(&"is_persist", is_persist)
-        .bind_name(&"priority", priority);
+        .bind_name(&"site_id", &site_id)
+        .bind_name(&"key", &params.key)
+        .bind_name(&"url_pattern", &params.url_pattern)
+        .bind_name(&"processor", &params.processor)
+        .bind_name(&"dom_selector", &params.dom_selector)
+        .bind_name(&"url_filter", &params.url_filter)
+        .bind_name(&"filename", &params.filename)
+        .bind_name(&"is_persist", &params.is_persist)
+        .bind_name(&"priority", &params.priority);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);

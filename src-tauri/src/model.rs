@@ -36,8 +36,7 @@ pub struct SiteQuery {
     pub processor: String,
     pub dom_selector: Option<String>,
     pub url_filter: String,
-    pub title_filter: Option<String>,
-    pub nest_parent: i64,
+    pub filename: Option<String>,
     pub is_persist: bool,
     pub priority: i64,
     pub created_at: String,
@@ -53,12 +52,11 @@ impl SiteQuery {
             processor: row.get(4)?,
             dom_selector: row.get(5)?,
             url_filter: row.get(6)?,
-            title_filter: row.get(7)?,
-            nest_parent: row.get(8)?,
-            is_persist: row.get(9)?,
-            priority: row.get(10)?,
-            created_at: row.get(11)?,
-            updated_at: row.get(12)?,
+            filename: row.get(7)?,
+            is_persist: row.get(8)?,
+            priority: row.get(9)?,
+            created_at: row.get(10)?,
+            updated_at: row.get(11)?,
         })
     }
 }
@@ -113,8 +111,7 @@ pub struct SiteQueryParam {
     pub processor: String,
     pub dom_selector: Option<String>,
     pub url_filter: String,
-    pub title_filter: Option<String>,
-    pub nest_parent: i64,
+    pub filename: Option<String>,
     pub is_persist: bool,
     pub priority: i64,
 }

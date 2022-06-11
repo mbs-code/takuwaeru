@@ -10,8 +10,7 @@ export type SiteQuery = {
   processor: ProcessorType
   dom_selector?: string
   url_filter: string
-  title_filter?: string
-  nest_parent: number
+  filename?: string
   is_persist: boolean
   priority: number
   created_at: string
@@ -39,8 +38,7 @@ export type FormSiteQuery = {
   processor: ProcessorType
   dom_selector?: string
   url_filter: string
-  title_filter?: string
-  nest_parent: number
+  filename?: string
   is_persist: boolean
   priority: number
 }

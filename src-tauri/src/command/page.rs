@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::{
-    api::{self},
+    api,
     db::get_conn,
     model::{Page, PageOrBool, PageParam},
 };

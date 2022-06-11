@@ -173,34 +173,9 @@ pub fn sync_site_queries(
         let site_query_id = site_query.id.unwrap_or(0);
         println!("qid {:?}", site_query_id);
         if site_query_id > 0 {
-            api::site_query::update(
-                &conn,
-                &site_query_id,
-                &site_id,
-                &site_query.key,
-                &site_query.url_pattern,
-                &site_query.processor,
-                &site_query.dom_selector,
-                &site_query.url_filter,
-                &site_query.title_filter,
-                &site_query.nest_parent,
-                &site_query.is_persist,
-                &site_query.priority,
-            )?;
+            api::site_query::update(&conn, &site_query_id, &site_id, site_query)?;
         } else {
-            api::site_query::create(
-                &conn,
-                &site_id,
-                &site_query.key,
-                &site_query.url_pattern,
-                &site_query.processor,
-                &site_query.dom_selector,
-                &site_query.url_filter,
-                &site_query.title_filter,
-                &site_query.nest_parent,
-                &site_query.is_persist,
-                &site_query.priority,
-            )?;
+            api::site_query::create(&conn, &site_id, site_query)?;
         }
     }
 

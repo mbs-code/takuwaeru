@@ -136,24 +136,11 @@
 
                   <div class="col">
                     <div class="align-items-center flex">
-                      <label class="w-8rem">ﾀｲﾄﾙ除外*</label>
+                      <label class="w-8rem">ファイル名</label>
                       <InputTextRegex
-                        v-model="query.title_filter"
+                        v-model="query.filename"
                         :disabled="loading"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col">
-                    <div class="align-items-center flex">
-                      <label class="w-8rem">親遡り*</label>
-
-                      <InputNumber
-                        v-model="query.nest_parent"
-                        class="w-full"
-                        mode="decimal"
-                        show-buttons
-                        :step="1"
+                        placeholder="{filename}"
                       />
                     </div>
                   </div>
@@ -292,8 +279,7 @@ const addSiteQuery = () => {
     processor: 'extract',
     dom_selector: '',
     url_filter: '',
-    title_filter: '',
-    nest_parent: 0,
+    filename: '',
     is_persist: false,
     priority: 0,
   })
@@ -319,8 +305,7 @@ const onReset = () => {
     processor: query.processor ?? 'extract',
     dom_selector: query.dom_selector ?? '',
     url_filter: query.url_filter ?? '',
-    title_filter: query.title_filter ?? '',
-    nest_parent: query.nest_parent ?? 0,
+    filename: query.filename ?? '',
     is_persist: query.is_persist ?? false,
     priority: query.priority ?? 0,
   })) ?? []
