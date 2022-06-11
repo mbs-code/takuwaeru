@@ -10,7 +10,7 @@
 
         <div class="h-1rem" />
 
-        <SiteSubPanel
+        <SiteSheetPanel
           :default-tab="0"
           :height="height - 274"
           :loading="loading"
@@ -23,7 +23,7 @@
       </div>
 
       <div class="col-12 md:col-6">
-        <SiteSubPanel
+        <SiteSheetPanel
           :default-tab="0"
           :height="height - 190"
           :loading="loading"

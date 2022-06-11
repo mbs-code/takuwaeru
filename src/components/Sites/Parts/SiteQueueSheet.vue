@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { Queue } from '~~/src/apis/useQueueAPI'
 
-const props = defineProps<{
+defineProps<{
   height: number,
 }>()
 
