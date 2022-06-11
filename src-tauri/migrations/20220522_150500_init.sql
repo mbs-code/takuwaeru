@@ -3,6 +3,8 @@ CREATE TABLE sites (
   "key" TEXT NOT NULL,
   "url" TEXT NOT NULL,
   "title" TEXT,
+  "analysis_count" INTEGER NOT NULL DEFAULT 0,
+  "download_count" INTEGER NOT NULL DEFAULT 0,
   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -15,8 +17,7 @@ CREATE TABLE site_queries (
   "processor" TEXT NOT NULL,
   "dom_selector" TEXT,
   "url_filter" TEXT NOT NULL,
-  "title_filter" TEXT,
-  "nest_parent" INTEGER NOT NULL DEFAULT 0,
+  -- "filename" TEXT NOT NULL,
   "is_persist" INTEGER NOT NULL DEFAULT 0,
   "priority" INTEGER NOT NULL DEFAULT 0,
   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,

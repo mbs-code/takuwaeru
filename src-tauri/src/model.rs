@@ -7,6 +7,8 @@ pub struct Site {
     pub key: String,
     pub url: String,
     pub title: Option<String>,
+    pub analysis_count: i64,
+    pub download_count: i64,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -17,8 +19,10 @@ impl Site {
             key: row.get(1)?,
             url: row.get(2)?,
             title: row.get(3)?,
-            created_at: row.get(4)?,
-            updated_at: row.get(5)?,
+            analysis_count: row.get(4)?,
+            download_count: row.get(5)?,
+            created_at: row.get(6)?,
+            updated_at: row.get(7)?,
         })
     }
 }
@@ -67,6 +71,8 @@ pub struct SiteWithQuery {
     pub key: String,
     pub url: String,
     pub title: Option<String>,
+    pub analysis_count: i64,
+    pub download_count: i64,
     pub created_at: String,
     pub updated_at: String,
     pub site_queries: Vec<SiteQuery>,
@@ -78,6 +84,8 @@ impl SiteWithQuery {
             key: site.key,
             url: site.url,
             title: site.title,
+            analysis_count: site.analysis_count,
+            download_count: site.download_count,
             created_at: site.created_at,
             updated_at: site.updated_at,
             site_queries: queries,
@@ -92,6 +100,8 @@ pub struct SiteParam {
     pub key: String,
     pub url: String,
     pub title: Option<String>,
+    pub analysis_count: i64,
+    pub download_count: i64,
     pub site_queries: Vec<SiteQueryParam>,
 }
 

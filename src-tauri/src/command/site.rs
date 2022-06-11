@@ -66,7 +66,7 @@ pub fn site_create(param: SiteParam) -> Result<SiteWithQuery, String> {
     let do_steps = || -> Result<SiteWithQuery, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let site_id = api::site::create(&conn, &param.key, &param.url, &param.title)?;
+        let site_id = api::site::create(&conn, &param)?;
         sync_site_queries(&conn, &site_id, &param.site_queries)?;
 
         let new_site = api::site::get(&conn, &site_id)?;
@@ -83,7 +83,7 @@ pub fn site_update(site_id: i64, param: SiteParam) -> Result<SiteWithQuery, Stri
     let do_steps = || -> Result<SiteWithQuery, Box<dyn Error>> {
         let conn = get_conn()?.lock()?;
 
-        let _ = api::site::update(&conn, &site_id, &param.key, &param.url, &param.title)?;
+        let _ = api::site::update(&conn, &site_id, &param)?;
         sync_site_queries(&conn, &site_id, &param.site_queries)?;
 
         let new_site = api::site::get(&conn, &site_id)?;

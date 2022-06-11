@@ -23,6 +23,8 @@ export type Site = {
   key: string
   url: string
   title?: string
+  analysis_count: number
+  download_count: number
   created_at: string
   updated_at: string
   site_queries: SiteQuery[]
@@ -47,6 +49,8 @@ export type FormSite = {
   key: string
   url: string
   title?: string
+  analysis_count: number
+  download_count: number
   site_queries: FormSiteQuery[]
 }
 

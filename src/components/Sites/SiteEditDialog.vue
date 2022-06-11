@@ -271,6 +271,8 @@ const form = reactive<FormSite>({
   key: '',
   url: '',
   title: '',
+  analysis_count: 0,
+  download_count: 0,
   site_queries: [],
 })
 
@@ -308,6 +310,8 @@ const onReset = () => {
   form.key = props.site?.key ?? ''
   form.url = props.site?.url ?? ''
   form.title = props.site?.title ?? ''
+  form.analysis_count = props.site?.analysis_count ?? 0
+  form.download_count = props.site?.download_count ?? 0
   form.site_queries = props.site?.site_queries.map(query => ({
     id: query.id ?? 0,
     key: query.key ?? '',

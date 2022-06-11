@@ -6,7 +6,7 @@ use sql_builder::{bind::Bind, quote, SqlBuilder};
 use crate::{
     api,
     db::chrono_now,
-    model::{Site, SiteQueryParam},
+    model::{Site, SiteParam, SiteQueryParam},
 };
 
 pub fn list_count(conn: &Connection) -> Result<i64, Box<dyn Error>> {
@@ -70,24 +70,31 @@ pub fn get(conn: &Connection, site_id: &i64) -> Result<Site, Box<dyn Error>> {
     Ok(site)
 }
 
-pub fn create(
-    conn: &Connection,
-    key: &String,
-    url: &String,
-    title: &Option<String>,
-) -> Result<i64, Box<dyn Error>> {
+pub fn create(conn: &Connection, param: &SiteParam) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::insert_into("sites")
         .field("key")
         .field("url")
         .field("title")
+        .field("analysis_count")
+        .field("download_count")
         .field("created_at")
         .field("updated_at")
-        .values(&[":key:", ":url:", ":title:", &quote(&now), &quote(&now)])
+        .values(&[
+            ":key:",
+            ":url:",
+            ":title:",
+            ":analysis_count:",
+            ":download_count:",
+            &quote(&now),
+            &quote(&now),
+        ])
         .sql()?
-        .bind_name(&"key", key)
-        .bind_name(&"url", url)
-        .bind_name(&"title", title);
+        .bind_name(&"key", &param.key)
+        .bind_name(&"url", &param.url)
+        .bind_name(&"title", &param.title)
+        .bind_name(&"analysis_count", &param.analysis_count)
+        .bind_name(&"download_count", &param.download_count);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
@@ -101,24 +108,22 @@ pub fn create(
     Ok(site_id)
 }
 
-pub fn update(
-    conn: &Connection,
-    site_id: &i64,
-    key: &String,
-    url: &String,
-    title: &Option<String>,
-) -> Result<i64, Box<dyn Error>> {
+pub fn update(conn: &Connection, site_id: &i64, param: &SiteParam) -> Result<i64, Box<dyn Error>> {
     let now = chrono_now();
     let sql = SqlBuilder::update_table("sites")
         .set("key", ":key:")
         .set("url", ":url:")
         .set("title", ":title:")
+        .set("analysis_count", ":analysis_count:")
+        .set("download_count", ":download_count:")
         .set("updated_at", &quote(&now))
         .and_where("id = ?".bind(site_id))
         .sql()?
-        .bind_name(&"key", key)
-        .bind_name(&"url", url)
-        .bind_name(&"title", title);
+        .bind_name(&"key", &param.key)
+        .bind_name(&"url", &param.url)
+        .bind_name(&"title", &param.title)
+        .bind_name(&"analysis_count", &param.analysis_count)
+        .bind_name(&"download_count", &param.download_count);
 
     #[cfg(debug_assertions)]
     println!("{:?}", &sql);
