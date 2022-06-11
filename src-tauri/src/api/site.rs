@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use rusqlite::Connection;
-use sql_builder::{bind::Bind, quote, SqlBuilder};
+use sql_builder::{bind::Bind, quote, baquote, SqlBuilder};
 
 use crate::{
     api,
@@ -32,7 +32,7 @@ pub fn list(
 
     if let Some(v_order) = order {
         let v_desc = desc.unwrap_or(false);
-        builder.order_by(quote(v_order), v_desc);
+        builder.order_by(baquote(v_order), v_desc);
     }
     if let Some(v_limit) = limit {
         builder.limit(v_limit);
@@ -41,7 +41,7 @@ pub fn list(
         builder.offset(v_offset);
     }
 
-    builder.order_by("id", false);
+    builder.order_by(baquote("id"), false);
     let sql = builder.field("*").sql()?;
 
     #[cfg(debug_assertions)]

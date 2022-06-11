@@ -91,8 +91,9 @@ const fetchSiteImpl = async () => {
   queues.value = await queueAPI.list({
     siteId: siteId.value,
     page: 1,
-    perPage: null,
+    perPage: 100,
     order: 'priority',
+    desc: true,
   })
 
   pageCount.value = await pageAPI.count(siteId.value)
