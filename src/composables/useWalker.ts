@@ -69,7 +69,7 @@ export const useWalker = (
   }
 
   const execute = async (site: Site, dryrun = false) => {
-    interrupt.value = false
+    if (interrupt.value) { throw new InterruptError() }
     processLogger.event('Execute')
     processResult.init(site)
 
@@ -153,6 +153,8 @@ export const useWalker = (
     // キューに追加する（失敗する可能性あり）
     let alreadyCount = 0
     for (const link of links) {
+      processLogger.debug(`Enque > ${link}`)
+
       if (!dryrun) {
         const res = await queueAPI.add(site.id, {
           url: link,

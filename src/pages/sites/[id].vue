@@ -172,6 +172,8 @@ const onExecute = async (infinite: boolean, dryrun = false) => {
   loading.value = true
 
   try {
+    walker.interrupt.value = false
+
     // eslint-disable-next-line no-unmodified-loop-condition
     while (infinite || queues.value.length > 0) {
       await walker.execute(site.value, dryrun)
