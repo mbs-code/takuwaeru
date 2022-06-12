@@ -5,7 +5,7 @@ import sanitize from 'sanitize-filename'
 import { Response } from '@tauri-apps/api/http'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
 import { useQueueAPI } from '~~/src/apis/useQueueAPI'
-import { Site, SiteQuery } from '~~/src/apis/useSiteAPI'
+import { Site, SiteQuery, useSiteAPI } from '~~/src/apis/useSiteAPI'
 import { useProcessLogger } from '~~/src/composables/useProcessLogger'
 import ParseUtil from '~~/src/utils/ParseUtil'
 import HttpUtil from '~~/src/utils/HttpUtil'
@@ -14,6 +14,7 @@ import { InterruptError } from '~~/src/errors/InterruptError'
 export const useWalker = (
   processLogger: ReturnType<typeof useProcessLogger>,
   processResult: ReturnType<typeof useProcessResult>,
+  siteAPI: ReturnType<typeof useSiteAPI>,
   pageAPI: ReturnType<typeof usePageAPI>,
   queueAPI: ReturnType<typeof useQueueAPI>,
   onFresh?: () => Promise<void>,
@@ -95,14 +96,34 @@ export const useWalker = (
     // クエリを実行する
     await handleQueries(site.site_queries, $, site, page, dryrun)
 
-    // ページを保存する
     if (!dryrun) {
+      // ページを保存する
       await pageAPI.update(page.id, {
         site_id: page.site_id,
         parent_page_id: page.parent_page_id,
         url: page.url,
         title: page.title,
         is_persist: page.is_persist,
+      })
+
+      // サイトを保存する
+      await siteAPI.update(site.id, {
+        key: site.key,
+        url: site.url,
+        title: site.title,
+        analysis_count: site.analysis_count,
+        download_count: site.download_count,
+        site_queries: site.site_queries.map(query => ({
+          id: query.id,
+          key: query.key,
+          url_pattern: query.url_pattern,
+          processor: query.processor,
+          dom_selector: query.dom_selector,
+          url_filter: query.url_filter,
+          filename: query.filename,
+          is_persist: query.is_persist,
+          priority: query.priority,
+        }))
       })
 
       // キューからページを削除する
@@ -171,6 +192,7 @@ export const useWalker = (
     }
 
     processLogger.debug(`Enque > ${links.length - alreadyCount} links (already: ${alreadyCount})`)
+    site.analysis_count++
   }
 
   const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
@@ -269,6 +291,8 @@ export const useWalker = (
     // TODO: 画像重複チェック
 
     processLogger.debug(`Download > ${links.length} links`)
+    site.analysis_count++
+    site.download_count++
   }
 
   return {

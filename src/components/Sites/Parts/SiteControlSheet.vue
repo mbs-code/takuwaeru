@@ -84,6 +84,13 @@
               {{ pageCount.toLocaleString() }}
             </span>
           </div>
+
+          <div class="white-space-nowrap">
+            <span>DL</span>
+            <span class="px-2 text-4xl">
+              {{ site?.download_count.toLocaleString() ?? 0 }}
+            </span>
+          </div>
         </div>
 
         <div v-show="queueCount === 0" class="text-red-500">
@@ -141,6 +148,7 @@
 
 <script setup lang="ts">
 import { open } from '@tauri-apps/api/shell'
+import { Site } from '~~/src/apis/useSiteAPI'
 import { QueryStatus } from '~~/src/composables/useProcessResult'
 
 const props = defineProps<{
@@ -150,6 +158,8 @@ const props = defineProps<{
   loading: boolean,
   height: number,
 }>()
+
+const site = inject<Site>('site')
 
 const onClear = inject<() => Promise<void>>('onClear')
 const onReset = inject<() => Promise<void>>('onReset')

@@ -111,7 +111,7 @@ const fetchSite = async () => {
   }
 }
 
-const walker = useWalker(processLogger, processResult, pageAPI, queueAPI, fetchSiteImpl)
+const walker = useWalker(processLogger, processResult, siteAPI, pageAPI, queueAPI, fetchSiteImpl)
 
 /// ////////////////////////////////////////////////////////////
 
@@ -205,6 +205,7 @@ const onInterrupt = () => {
 /// ////////////////////////////////////////////////////////////
 
 provide('queues', queues)
+provide('site', site)
 
 provide('onClear', onClear)
 provide('onReset', onReset)
