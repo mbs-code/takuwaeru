@@ -1,26 +1,35 @@
 {
   "private": true,
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt generate",
-    "preview": "nuxt preview",
+    "dev": "nuxi dev",
+    "build": "nuxi generate",
+    "preview": "nuxi preview",
+    "analyze": "nuxi analyze -o",
     "tauri": "tauri",
     "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",
     "@tauri-apps/api": "^1.0.0-rc.5",
-    "daisyui": "^2.15.0"
+    "cheerio": "^1.0.0-rc.11",
+    "date-fns": "^2.28.0",
+    "primeflex": "^3.2.1",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.12.6",
+    "sanitize-filename": "^1.6.3",
+    "valvelet": "^1.1.1",
+    "vue-window-size": "^1.1.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^10.0.0",
     "@tauri-apps/cli": "^1.0.0-rc.11",
+    "@types/valvelet": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "eslint": "^8.16.0",
     "eslint-plugin-vue": "^9.0.1",
     "nuxt": "3.0.0-rc.3",
-    "tailwindcss": "^3.0.24",
+    "sass": "^1.52.1",
     "typescript": "^4.6.4",
     "vite-plugin-eslint": "^1.6.1"
   }
