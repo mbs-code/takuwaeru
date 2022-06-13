@@ -1,17 +1,16 @@
-import { CheerioAPI } from 'cheerio'
-
 export default class ParseUtil {
-  public static extractLinks ($: CheerioAPI, domSelector = '[href],[src]', urlFilter?: string) {
+  public static extractLinks (document: Document, domSelector = '[href],[src]', urlFilter?: string) {
     // リンクを抽出する
     const set = new Set<string>()
 
-    $(domSelector).each((_i, el) => {
-      const href = $(el).attr('href')
+    const doms = document.querySelectorAll(domSelector)
+    for (const dom of doms) {
+      const href = dom.getAttribute('href')
       if (href) { set.add(href) }
 
-      const src = $(el).attr('src')
+      const src = dom.getAttribute('src')
       if (src) { set.add(src) }
-    })
+    }
 
     let links = [...set]
 

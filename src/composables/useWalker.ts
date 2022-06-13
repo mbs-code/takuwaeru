@@ -1,6 +1,5 @@
 import { createDir, writeBinaryFile } from '@tauri-apps/api/fs'
 import { dirname, join as pathJoin } from '@tauri-apps/api/path'
-import { CheerioAPI } from 'cheerio'
 import sanitize from 'sanitize-filename'
 import { Response } from '@tauri-apps/api/http'
 import { Page, usePageAPI } from '~~/src/apis/usePageAPI'
@@ -84,17 +83,17 @@ export const useWalker = (
 
     // http を叩いて取ってくる
     // TODO: reffer
-    const $ = await HttpUtil.fetchBody(page.url, undefined, (res: Response<string>) => {
+    const document = await HttpUtil.fetchBody(page.url, undefined, (res: Response<string>) => {
       processLogger.debug(`Fetch > ${res.data.length.toLocaleString()} byte`)
     })
 
     // タイトルを取得する
-    const title = $('title').text()
+    const title = document.querySelector('title')?.text
     page.title = title
     processLogger.info(`Title > ${title}`)
 
     // クエリを実行する
-    await handleQueries(site.site_queries, $, site, page, dryrun)
+    await handleQueries(site.site_queries, document, site, page, dryrun)
 
     if (!dryrun) {
       // ページを保存する
@@ -135,7 +134,7 @@ export const useWalker = (
 
   /// ////////////////////////////////////////////////////////////
 
-  const handleQueries = async (queries: SiteQuery[], $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
+  const handleQueries = async (queries: SiteQuery[], document: Document, site: Site, page: Page, dryrun: boolean) => {
     for (const query of queries) {
       processResult.setQueryStatus(query, 'exec')
 
@@ -150,10 +149,10 @@ export const useWalker = (
       processLogger.info(`[Query] > ${query.key}`)
       switch (query.processor) {
         case 'extract':
-          await handleExtract(query, $, site, page, dryrun)
+          await handleExtract(query, document, site, page, dryrun)
           break
         case 'download':
-          await handledownload(query, $, site, page, dryrun)
+          await handledownload(query, document, site, page, dryrun)
           break
         default:
           throw new Error(`Illegal process : ${query.processor}`)
@@ -165,9 +164,9 @@ export const useWalker = (
     }
   }
 
-  const handleExtract = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
+  const handleExtract = async (query: SiteQuery, document: Document, site: Site, page: Page, dryrun: boolean) => {
     // URL を全て抜き出す
-    const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
+    const links = ParseUtil.extractLinks(document, query.dom_selector, query.url_filter)
     processLogger.debug(`Extract > ${links.length} links`)
     processResult.setQueryTaskCnt(query, links.length)
 
@@ -195,9 +194,9 @@ export const useWalker = (
     site.analysis_count++
   }
 
-  const handledownload = async (query: SiteQuery, $: CheerioAPI, site: Site, page: Page, dryrun: boolean) => {
+  const handledownload = async (query: SiteQuery, document: Document, site: Site, page: Page, dryrun: boolean) => {
     // URL を全て抜き出す
-    const links = ParseUtil.extractLinks($, query.dom_selector, query.url_filter)
+    const links = ParseUtil.extractLinks(document, query.dom_selector, query.url_filter)
     const linkCnt = links.length
     processLogger.debug(`Extract > ${linkCnt} links`)
     processResult.setQueryTaskCnt(query, linkCnt)

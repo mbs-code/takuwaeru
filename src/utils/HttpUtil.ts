@@ -1,5 +1,4 @@
 import { fetch, Response, ResponseType } from '@tauri-apps/api/http'
-import { load as cheerioLoad } from 'cheerio'
 import valvelet from 'valvelet'
 
 const INTERVAL = 1200 // TODO: 再調整、valvelet内部で再度delay関数を使ってゆらぎを出してもいいかも
@@ -28,8 +27,8 @@ export default class HttpUtil {
 
     // dom変換する
     const body = res.data
-    const $ = cheerioLoad(body)
-    return $
+    const document = (new DOMParser()).parseFromString(body, 'text/html')
+    return document
   }
 
   public static async fetchBlob (
@@ -46,7 +45,7 @@ export default class HttpUtil {
     )) as unknown as Response<number[]>
     if (onFetched) { onFetched(res) }
 
-    // data 取得
+    // 生 data 取得
     const body = res.data
     return body
   }
