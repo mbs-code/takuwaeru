@@ -1,10 +1,10 @@
 <template>
   <div class="surface-100" :style="`height: ${height}px`">
     <img
-      v-if="props.blob && props.blob.length > 0"
+      v-if="srcUrl"
       alt="Image Text"
       class="block w-full"
-      :src="imageUrl"
+      :src="srcUrl"
       style="object-fit: contain"
       :style="`height: ${height}px`"
     >
@@ -20,8 +20,19 @@ const props = defineProps<{
   height: number,
 }>()
 
-const imageUrl = computed(() => 'data:image/jpg;base64,' +
-btoa(new Uint8Array(props.blob).reduce(function (data, byte) {
-  return data + String.fromCharCode(byte)
-}, '')))
+const srcUrl = ref<string>('')
+
+watch(() => props.blob, () => {
+  if (props.blob) {
+    try {
+      const url = 'data:image/jpg;base64,' + btoa(new Uint8Array(props.blob).reduce(function (data, byte) {
+        return data + String.fromCharCode(byte)
+      }, ''))
+      srcUrl.value = url
+    } catch (err) {
+      /** 握りつぶす */
+      srcUrl.value = null
+    }
+  }
+})
 </script>
